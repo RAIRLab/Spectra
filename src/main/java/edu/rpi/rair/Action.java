@@ -2,6 +2,7 @@ package edu.rpi.rair;
 
 import com.naveensundarg.shadow.prover.representations.formula.And;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
+import com.naveensundarg.shadow.prover.representations.value.Compound;
 import com.naveensundarg.shadow.prover.representations.value.Value;
 import com.naveensundarg.shadow.prover.representations.value.Variable;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
@@ -27,6 +28,8 @@ public class Action {
 
     private int weight;
 
+    private final Compound shorthand;
+
     private Action(String name, Set<Formula> preconditions, Set<Formula> additions, Set<Formula> deletions, List<Variable> freeVariables) {
         this.name = name;
         this.preconditions = preconditions;
@@ -46,6 +49,35 @@ public class Action {
         this.weight = preconditions.stream().mapToInt(Formula::getWeight).sum() +
                 additions.stream().mapToInt(Formula::getWeight).sum() +
                 deletions.stream().mapToInt(Formula::getWeight).sum();
+
+        List<Value> valuesList = freeVariables.stream().collect(Collectors.toList());;
+        this.shorthand = new Compound(name, valuesList);
+    }
+
+    private Action(String name, Set<Formula> preconditions, Set<Formula> additions,
+                   Set<Formula> deletions, List<Variable> freeVariables,
+                   Compound shorthand
+    ) {
+        this.name = name;
+        this.preconditions = preconditions;
+
+        this.additions = additions;
+        this.deletions = deletions;
+        List<Variable> computedFreeVariables = preconditions.
+                stream().
+                map(x -> Sets.difference(x.variablesPresent(), x.boundVariablesPresent())).
+                reduce(Sets.newSet(), Sets::union).
+                stream().sorted().collect(Collectors.toList());
+
+        this.freeVariables = freeVariables;
+
+        this.precondition = new And(preconditions.stream().collect(Collectors.toList()));
+
+        this.weight = preconditions.stream().mapToInt(Formula::getWeight).sum() +
+                additions.stream().mapToInt(Formula::getWeight).sum() +
+                deletions.stream().mapToInt(Formula::getWeight).sum();
+
+        this.shorthand = shorthand;
     }
 
 
@@ -97,16 +129,20 @@ public class Action {
                 newFreeVraibles.add(var);
             }
         }
-        return new Action(name, newPreconditions, newAdditions, newDeletions, newFreeVraibles);
+
+        List<Value> valuesList = freeVariables.stream().collect(Collectors.toList());;
+        Compound shorthand = (Compound)(new Compound(name, valuesList)).apply(binding);
+        return new Action(name, newPreconditions, newAdditions, newDeletions, newFreeVraibles, shorthand);
     }
+
+    public String getName() {
+        return name;
+    }
+
+
     @Override
     public String toString() {
-        return "Action{" +
-                "preconditions=" + preconditions +
-                ", additions=" + additions +
-                ", deletions=" + deletions +
-                ", name='" + name + '\'' +
-                '}';
+        return shorthand.getArguments().length == 0?  name: shorthand.toString();
     }
 
     @Override

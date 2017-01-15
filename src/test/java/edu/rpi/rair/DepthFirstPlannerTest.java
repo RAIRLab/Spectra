@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.testng.Assert.*;
 
@@ -33,7 +34,7 @@ public class DepthFirstPlannerTest {
         Planner depthFirstPlanner = new DepthFirstPlanner();
 
         PlanningProblem planningProblem = planningProblemList.get(2);
-        System.out.println(depthFirstPlanner.plan(planningProblem.background, planningProblem.actions, planningProblem.start, planningProblem.goal));
+        System.out.println(depthFirstPlanner.plan(planningProblem.getBackground(), planningProblem.getActions(), planningProblem.getStart(), planningProblem.getGoal()));
     }
 
     @DataProvider
@@ -55,16 +56,29 @@ public class DepthFirstPlannerTest {
     }
 
 
+
     @Test(dataProvider = "testCompletenessDataProvider")
     public void testCompletness(PlanningProblem planningProblem) throws Exception {
 
         Optional<Set<Plan>> possiblePlans = depthFirstPlanner.plan(
-                planningProblem.background,
-                planningProblem.actions,
-                planningProblem.start,
-                planningProblem.goal);
+                planningProblem.getBackground(),
+                planningProblem.getActions(),
+                planningProblem.getStart(),
+                planningProblem.getGoal());
 
         Assert.assertTrue(possiblePlans.isPresent());
+
+        Set<Plan> plans = possiblePlans.get();
+
+        if(planningProblem.getExpectedActionSequencesOpt().isPresent()){
+
+            Set<List<Action>> actionSequences = plans.stream().map(Plan::getActions).collect(Collectors.toSet());
+            Set<List<Action>> expectedActionSequences = planningProblem.getExpectedActionSequencesOpt().get();
+
+
+            Assert.assertEquals(actionSequences, expectedActionSequences);
+        }
+
 
     }
 }

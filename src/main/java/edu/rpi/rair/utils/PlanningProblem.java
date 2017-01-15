@@ -2,6 +2,7 @@ package edu.rpi.rair.utils;
 
 import clojure.lang.Obj;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
+import com.naveensundarg.shadow.prover.representations.value.Value;
 import com.naveensundarg.shadow.prover.representations.value.Variable;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
 import com.naveensundarg.shadow.prover.utils.Reader;
@@ -16,10 +17,8 @@ import us.bpsm.edn.parser.Token;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.security.Key;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -27,11 +26,13 @@ import java.util.stream.Collectors;
  */
 public class PlanningProblem {
 
-    public Set<Formula> background;
-    public Set<Action> actions;
-    public State start;
-    public State goal;
-    public String name;
+    private Set<Formula> background;
+    private Set<Action> actions;
+    private State start;
+    private State goal;
+    private String name;
+    private Optional<Set<List<Action>>> expectedActionSequencesOpt;
+    private Map<String, Action> actionMap;
 
     private static final Keyword BACKGROUND = Keyword.newKeyword("background");
     private static final Keyword START = Keyword.newKeyword("start");
@@ -45,6 +46,7 @@ public class PlanningProblem {
 
     private static final Symbol ACTION_DEFINER = Symbol.newSymbol("define-action");
 
+    private static final Keyword EXPECTED_PLANS = Keyword.newKeyword("expected-plans");
 
     public PlanningProblem(String name, Set<Formula> background, State start, State goal, Set<Action> actions) {
 
@@ -53,6 +55,19 @@ public class PlanningProblem {
         this.actions = actions;
         this.goal = goal;
         this.name = name;
+        this.actionMap = CollectionUtils.newMap();
+        this.expectedActionSequencesOpt = Optional.empty();
+    }
+
+    public PlanningProblem(String name, Set<Formula> background, State start, State goal, Set<Action> actions, Set<List<Action>> expectedActionSequences) {
+
+        this.background = background;
+        this.start = start;
+        this.actions = actions;
+        this.goal = goal;
+        this.name = name;
+        this.actionMap = CollectionUtils.newMap();
+        this.expectedActionSequencesOpt = Optional.of(expectedActionSequences);
     }
 
     public static List<PlanningProblem> readFromFile(InputStream inputStream) throws Reader.ParsingException {
@@ -76,15 +91,88 @@ public class PlanningProblem {
 
             String name = planningProblemSpec.get(NAME).toString();
             Set<Action> actions = readActionsFrom(actionDefinitions);
+            Map<String, Action> actionMap = CollectionUtils.newMap();
 
-            planningProblems.add(new PlanningProblem(name, background, State.initializeWith(start),
+            actions.stream().forEach(action->{
+                actionMap.put(action.getName(), action);
+            });
+            if(planningProblemSpec.containsKey(EXPECTED_PLANS)){
+                List<?> plans = (List<?>) planningProblemSpec.get(EXPECTED_PLANS);
+
+                Set<List<Action>> expectedActions = plans.stream().map(plan->{
+
+                     List<?> instantActionList = (List<?>) plan;
+
+                    List<Action> actionsList =  instantActionList.stream().map(x -> {
+                        try {
+                            return readInstantiatedAction(actionMap, x);
+                        } catch (Reader.ParsingException e) {
+                           return null;
+                        }
+                    }).collect(Collectors.toList());
+
+                    if(actionsList.stream().anyMatch(Objects::isNull)){
+                        return null;
+                    } else {
+                        return actionsList;
+                    }
+
+                }).collect(Collectors.toSet());
+
+
+                 planningProblems.add(new PlanningProblem(name, background, State.initializeWith(start),
+                    State.initializeWith(goal), actions, expectedActions));
+            } else {
+
+                 planningProblems.add(new PlanningProblem(name, background, State.initializeWith(start),
                     State.initializeWith(goal), actions));
+            }
+
+
 
             nextValue = parser.nextValue(parseable);
         }
 
         return planningProblems;
 
+    }
+
+
+
+    private  static Action readInstantiatedAction(Map<String, Action> actionMap, Object instantiatedActionSpec) throws Reader.ParsingException {
+
+        if(instantiatedActionSpec instanceof List<?>){
+
+            List<?> instActionList = (List<?>) instantiatedActionSpec;
+            String name = instActionList.get(0).toString();
+            Action general = actionMap.get(name);
+
+            List<Variable> variables = general.openVars();
+            if(variables.size()!=instActionList.size()-1){
+
+                throw new AssertionError("Not a proper instantiation of "+ name);
+
+            }
+
+            Map<Variable, Value> binding = CollectionUtils.newMap();
+            for(int i = 1; i<instActionList.size(); i++){
+
+                binding.put(variables.get(i-1), Reader.readLogicValue(instActionList.get(i)));
+            }
+
+
+            return general.instantiate(binding);
+        } else {
+
+            String name = instantiatedActionSpec.toString();
+
+            if(actionMap.containsKey(name)){
+               return actionMap.get(name);
+            }
+            else{
+                return null;
+            }
+        }
     }
 
     private static Set<Action> readActionsFrom(List<?> actionSpecs) throws Reader.ParsingException {
@@ -154,6 +242,34 @@ public class PlanningProblem {
         return formulae;
 
 
+    }
+
+    public Set<Formula> getBackground() {
+        return background;
+    }
+
+    public Set<Action> getActions() {
+        return actions;
+    }
+
+    public State getStart() {
+        return start;
+    }
+
+    public State getGoal() {
+        return goal;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Optional<Set<List<Action>>> getExpectedActionSequencesOpt() {
+        return expectedActionSequencesOpt;
+    }
+
+    public Map<String, Action> getActionMap() {
+        return actionMap;
     }
 
     @Override
