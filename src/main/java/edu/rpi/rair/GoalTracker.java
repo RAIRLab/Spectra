@@ -14,6 +14,9 @@ import java.util.Set;
 public class GoalTracker {
 
 
+
+
+
     private final Set<Formula> background;
     private State currentState;
     private final Set<Goal> currentGoals;
@@ -30,6 +33,7 @@ public class GoalTracker {
 
 
     public boolean adoptGoal(Goal goal) {
+
 
 
         Optional<Set<Plan>> possiblePlans = planner.plan(background, actions, currentState, goal.getGoalState());

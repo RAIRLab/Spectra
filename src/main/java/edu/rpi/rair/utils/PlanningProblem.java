@@ -81,52 +81,7 @@ public class PlanningProblem {
 
         while (!nextValue.equals(Token.END_OF_INPUT)) {
 
-            Map<?, ?> planningProblemSpec = (Map<?, ?>) nextValue;
-
-            Set<Formula> background = readFrom((List<?>) planningProblemSpec.get(BACKGROUND));
-            Set<Formula> start = readFrom((List<?>) planningProblemSpec.get(START));
-            Set<Formula> goal = readFrom((List<?>) planningProblemSpec.get(GOAL));
-
-            List<?> actionDefinitions = (List<?>) planningProblemSpec.get(ACTION);
-
-            String name = planningProblemSpec.get(NAME).toString();
-            Set<Action> actions = readActionsFrom(actionDefinitions);
-            Map<String, Action> actionMap = CollectionUtils.newMap();
-
-            actions.stream().forEach(action->{
-                actionMap.put(action.getName(), action);
-            });
-            if(planningProblemSpec.containsKey(EXPECTED_PLANS)){
-                List<?> plans = (List<?>) planningProblemSpec.get(EXPECTED_PLANS);
-
-                Set<List<Action>> expectedActions = plans.stream().map(plan->{
-
-                     List<?> instantActionList = (List<?>) plan;
-
-                    List<Action> actionsList =  instantActionList.stream().map(x -> {
-                        try {
-                            return readInstantiatedAction(actionMap, x);
-                        } catch (Reader.ParsingException e) {
-                           return null;
-                        }
-                    }).collect(Collectors.toList());
-
-                    if(actionsList.stream().anyMatch(Objects::isNull)){
-                        return null;
-                    } else {
-                        return actionsList;
-                    }
-
-                }).collect(Collectors.toSet());
-
-
-                 planningProblems.add(new PlanningProblem(name, background, State.initializeWith(start),
-                    State.initializeWith(goal), actions, expectedActions));
-            } else {
-
-                 planningProblems.add(new PlanningProblem(name, background, State.initializeWith(start),
-                    State.initializeWith(goal), actions));
-            }
+            planningProblems.add(readFromObject(nextValue));
 
 
 
@@ -137,6 +92,56 @@ public class PlanningProblem {
 
     }
 
+    public static PlanningProblem readFromObject(Object nextValue) throws Reader.ParsingException {
+        Map<?, ?> planningProblemSpec = (Map<?,?>)nextValue;
+
+        Set<Formula> background = readFrom((List<?>) planningProblemSpec.get(BACKGROUND));
+        Set<Formula> start = readFrom((List<?>) planningProblemSpec.get(START));
+
+
+        Set<Formula> goal = readFrom((List<?>) planningProblemSpec.get(GOAL));
+
+        List<?> actionDefinitions = (List<?>) planningProblemSpec.get(ACTION);
+
+        String name = planningProblemSpec.get(NAME).toString();
+        Set<Action> actions = readActionsFrom(actionDefinitions);
+        Map<String, Action> actionMap = CollectionUtils.newMap();
+
+        actions.stream().forEach(action->{
+            actionMap.put(action.getName(), action);
+        });
+        if(planningProblemSpec.containsKey(EXPECTED_PLANS)){
+            List<?> plans = (List<?>) planningProblemSpec.get(EXPECTED_PLANS);
+
+            Set<List<Action>> expectedActions = plans.stream().map(plan->{
+
+                 List<?> instantActionList = (List<?>) plan;
+
+                List<Action> actionsList =  instantActionList.stream().map(x -> {
+                    try {
+                        return readInstantiatedAction(actionMap, x);
+                    } catch (Reader.ParsingException e) {
+                       return null;
+                    }
+                }).collect(Collectors.toList());
+
+                if(actionsList.stream().anyMatch(Objects::isNull)){
+                    return null;
+                } else {
+                    return actionsList;
+                }
+
+            }).collect(Collectors.toSet());
+
+
+             return new PlanningProblem(name, background, State.initializeWith(start),
+                State.initializeWith(goal), actions, expectedActions);
+        } else {
+
+             return new PlanningProblem(name, background, State.initializeWith(start),
+                State.initializeWith(goal), actions);
+        }
+    }
 
 
     private  static Action readInstantiatedAction(Map<String, Action> actionMap, Object instantiatedActionSpec) throws Reader.ParsingException {
@@ -222,7 +227,7 @@ public class PlanningProblem {
 
     }
 
-    private static Set<Formula> readFrom(List<?> objects) throws Reader.ParsingException {
+    public static Set<Formula> readFrom(List<?> objects) throws Reader.ParsingException {
 
         Set<Formula> formulae = objects.stream().map(x -> {
             try {

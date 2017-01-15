@@ -3,9 +3,11 @@ package edu.rpi.rair;
 import com.naveensundarg.shadow.prover.core.Prover;
 import com.naveensundarg.shadow.prover.core.SnarkWrapper;
 import com.naveensundarg.shadow.prover.representations.formula.And;
+import com.naveensundarg.shadow.prover.representations.formula.BiConditional;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
 import com.naveensundarg.shadow.prover.representations.value.Value;
 import com.naveensundarg.shadow.prover.representations.value.Variable;
+import com.naveensundarg.shadow.prover.utils.CollectionUtils;
 import com.naveensundarg.shadow.prover.utils.ImmutablePair;
 import com.naveensundarg.shadow.prover.utils.Pair;
 import com.naveensundarg.shadow.prover.utils.Sets;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static edu.rpi.rair.State.FALSE;
@@ -23,6 +26,7 @@ import static edu.rpi.rair.State.FALSE;
  */
 public class Operations {
 
+    private static boolean DEEP_EQUIVALENCE = false;
     private static Prover prover;
 
     static{
@@ -31,38 +35,125 @@ public class Operations {
 
     public static synchronized Optional<Map<Variable, Value>> proveAndGetBindings(Set<Formula> givens, Formula goal, List<Variable> variables){
 
-        return prover.proveAndGetBindings(givens, goal, variables);
+        Future<Optional<Map<Variable, Value>>> future = new FutureTask<>(()->{
+                   return prover.proveAndGetBindings(givens, goal, variables);
+
+
+        });
+
+        Optional<Map<Variable, Value>> answer;
+
+        try{
+
+            answer = future.get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            answer =   Optional.empty();
+        }
+
+        return answer;
     }
 
-    public static Optional<Pair<State,Action>> apply(Set<Formula> background, Action action, State state){
 
-        Prover prover = new SnarkWrapper();
+     public static synchronized Optional<Set<Map<Variable, Value>>> proveAndGetMultipleBindings(Set<Formula> givens, Formula goal, List<Variable> variables){
+
+       return prover.proveAndGetMultipleBindings(givens, goal, variables);
+
+      /*  Future<Optional<Set<Map<Variable, Value>>>> future = new FutureTask<>(()-> prover.proveAndGetMultipleBindings(givens, goal, variables));
+
+        Optional<Set<Map<Variable, Value>>> answer;
+
+        try{
+
+            answer = future.get(50, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e ) {
+            answer =   Optional.empty();
+        }
+                return answer;
+
+*/
+    }
+
+    public static Optional<Set<Pair<State,Action>>> apply(Set<Formula> background, Action action, State state){
+
 
 
         Set<Formula> givens = Sets.union(background, state.getFormulae());
 
-        Optional<Map<Variable, Value>> bingdingsOpt = proveAndGetBindings(givens, action.getPrecondition(), action.openVars());
+        Optional<Set<Map<Variable, Value>>> bindingsOpt = proveAndGetMultipleBindings(givens, action.getPrecondition(), action.openVars());
 
         State newState;
 
-        if(!bingdingsOpt.isPresent()){
+        if(!bindingsOpt.isPresent()){
 
 
             return Optional.empty();
 
         }
+
+        Set<Pair<State,Action>> nexts = Sets.newSet();
+        for(Map<Variable, Value> binding: bindingsOpt.get()){
+
+            if(binding.values().stream().anyMatch(x-> x instanceof Variable)){
+
+                continue;
+            }
+
+        Set<Formula> instantiatedDeletions =  action.instantiateDeletions(binding);
+
+        Set<Formula> formulaeToRemove = state.getFormulae().stream().
+                filter(f-> instantiatedDeletions.stream().anyMatch(d-> equivalent(background, f,d))).collect(Collectors.toSet());
+
         Set<Formula> newFormulae = state.getFormulae();
 
-        newFormulae = Sets.union(newFormulae, action.instantiateAdditions(bingdingsOpt.get()));
+        newFormulae = Sets.union(newFormulae, action.instantiateAdditions(binding));
 
-        newFormulae = Sets.difference(newFormulae, action.instantiateDeletions(bingdingsOpt.get()));
+
+        newFormulae = Sets.difference(newFormulae, formulaeToRemove);
+
 
         newState = State.initializeWith(newFormulae);
 
-        return Optional.of(ImmutablePair.from(newState, action.instantiate(bingdingsOpt.get())));
+        nexts.add(ImmutablePair.from(newState, action.instantiate(binding)));
+
+
+        }
+
+        if(nexts.isEmpty()){
+
+            Map<Variable, Value> emptyBinding = CollectionUtils.newMap();
+            Set<Formula> instantiatedDeletions =  action.instantiateDeletions(emptyBinding);
+
+            Set<Formula> formulaeToRemove = state.getFormulae().stream().
+                filter(f-> instantiatedDeletions.stream().anyMatch(d-> equivalent(background, f,d))).collect(Collectors.toSet());
+
+            Set<Formula> newFormulae = state.getFormulae();
+
+            newFormulae = Sets.union(newFormulae, action.instantiateAdditions(emptyBinding));
+
+
+            newFormulae = Sets.difference(newFormulae, formulaeToRemove);
+
+
+        newState = State.initializeWith(newFormulae);
+
+            nexts.add(ImmutablePair.from(newState, action.instantiate(emptyBinding)));
+
+
+        }
+
+        return Optional.of(nexts);
 
     }
 
+    public static boolean equivalent(Set<Formula> background, Formula f1, Formula f2){
+
+        if(!DEEP_EQUIVALENCE){
+            return f1.equals(f2);
+        }
+
+        BiConditional biConditional = new BiConditional(f1, f2);
+        return prover.prove(background,biConditional).isPresent();
+    }
 
     public static boolean satisfies(Set<Formula> background, State state, State goal){
 

@@ -1,12 +1,12 @@
-{:name          "test 1"
- :background    [P]
- :start         [Q]
- :goal          [R]
+{:name           "test 1"
+ :background     [p]
+ :start          [q]
+ :goal           [r]
  :actions
-                [(define-action a1 ()
-                                {:preconditions [(or Q R)]
-                                 :additions     [R]
-                                 :deletions     [Q]})]
+                 [(define-action a1 ()
+                                 {:preconditions [(or q r)]
+                                  :additions     [r]
+                                  :deletions     [q]})]
 
  :expected-plans ([a1])
  }
@@ -15,13 +15,13 @@
 
 {:name           "simple killing"
  :background     []
- :start          [(forall ?x (Alive ?x))]
- :goal           [(forall ?x (Dead ?x))]
+ :start          [(forall ?x (alive ?x))]
+ :goal           [(forall ?x (dead ?x))]
  :actions
                  [(define-action kill ()
-                                 {:preconditions [(Alive ?x)]
-                                  :additions     [(Dead ?x)]
-                                  :deletions     [(Alive ?x)]})]
+                                 {:preconditions [(alive ?x)]
+                                  :additions     [(dead ?x)]
+                                  :deletions     [(alive ?x)]})]
 
  :expected-plans ([kill])
 
@@ -111,62 +111,74 @@
                    [drink eat work])}
 
 
-{:name       "bidding problem"
- :background []
- :start      [(bid 0)]
- :goal       [(bid 5)]
+
+
+{:name           "demo 1"
+ :background     [
+                  (not (= room1 room2))
+                  (not (= prisoner commander))
+                  (not (= self prisoner))
+                  (not (= self commander))
+                  (person prisoner)
+                  (person commander)
+                  ]
+ :start          [(in self room1)
+                  (in commander room2)
+                  (in prisoner room1)
+                  (open (door room2))
+                  (not (open (door room1)))]
+ :goal           [(interrogates commander prisoner)]
  :actions
-             [(define-action post-new-bid (?number)
-                             {:preconditions [(bid ?number)]
-                              :additions     [(bid ($$sum 1 ?number))]
-                              :deletions     [(bid ?number)]})]
+                 [(define-action open-door [?room]
+                                 {:preconditions [(not (open (door ?room)))]
+                                  :additions     [(open (door ?room))]
+                                  :deletions     [(not (open (door ?room)))]})
 
- :expected-plans ([(post-new-bid 0)
-                   (post-new-bid 1)
-                   (post-new-bid 2)
-                   (post-new-bid 3)
-                   (post-new-bid 4)])}
 
-{:name       "Moving Between Rooms"
- :background [ (not (= room1 room2))]
- :start      [(In self room1)
-              (In commander room2)
-              (In prisoner room1)
-              (Open (door room2))
-              (not (Open (door room1))) ]
- :goal       [(In prisoner room2)]
- :actions
-             [(define-action open-door [?room]
-                             {:preconditions [(not (Open (door ?room)))]
-                              :additions [(Open (door ?room))]
-                              :deletions [(not (Open (door ?room)))]})
+                  (define-action accompany[?person ?room1 ?room2]
+                                 {:preconditions [(not (= ?room1 ?room2))
+                                                  (in ?person ?room1)
+                                                  (in self ?room1)
+                                                  (open (door ?room1))
+                                                  (open (door ?room2))]
 
-              (define-action move-thing-from-to [?thing ?room1 ?room2]
-                             {:preconditions [(not (= ?room1 ?room2))
-                                              (In ?thing ?room1)
-                                              (Open (door ?room1))
-                                              (Open (door ?room2))]
+                                  :additions     [(in ?person ?room2)
+                                                  (in self ?room2)]
+                                  :deletions     [(in ?person ?room1)
+                                                  (in self ?room1)]})
 
-                              :additions     [(In ?thing ?room2)]
-                              :deletions     [(In ?thing ?room1)
-                                              (In self ?room1)]})
-              (define-action accompany-from-to [?thing ?room1 ?room2]
-                             {:preconditions [(not (= ?room1 ?room2))
-                                              (In self ?room1)
-                                              (In ?thing ?room1)
-                                              (Open (door ?room1))
-                                              (Open (door ?room2))]
+                  (define-action request-move [?person ?room2 ?room1]
+                                 {:preconditions [(not (= ?room1 ?room2))
+                                                  (in ?person ?room2)
+                                                  (not (= ?person prisoner))
+                                                  (open (door ?room1))
+                                                  (open (door ?room2))]
 
-                              :additions     [(In ?thing ?room2)
-                                              (In ?self ?room2)]
-                              :deletions     [(In ?thing ?room1)
-                                              (In self ?room1)]})]
+                                  :additions     [(in ?person ?room1)]
+                                  :deletions     [(in ?person ?room2)]})
 
- :expected-plans ([(open-door room1)
-                   (accompany-from-to prisoner room1 room2)]
+                  (define-action get-interrogated [?room]
+                                 {:preconditions [(in commander ?room)
+                                                  (in prisoner ?room)]
+
+                                  :additions     [(interrogates commander prisoner)]
+                                  :deletions     []})
+                  ]
+
+ :expected-plans (
 
                    [(open-door room1)
-                   (move-thing-from-to prisoner room1 room2)])
+                    (request-move commander room2 room1)
+                    (get-interrogated room1)
+                    ]
+
+                   [(open-door room1)
+                    (accompany prisoner room1 room2)
+                    (get-interrogated room2)
+                    ]
+
+                   )
 
  }
+
 

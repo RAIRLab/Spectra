@@ -14,9 +14,25 @@ import java.util.stream.Collectors;
 public class DepthFirstPlanner implements Planner {
 
 
+    private static final int MAX_DEPTH = 4;
+
+
     @Override
     public Optional<Set<Plan>> plan(Set<Formula> background, Set<Action> actions, State start, State goal) {
 
+
+       return planInternal(Sets.newSet(), 0, background, actions, start, goal);
+
+
+    }
+
+
+
+    private Optional<Set<Plan>> planInternal(Set<Pair<State, Action>> history, int currentDepth, Set<Formula> background, Set<Action> actions, State start, State goal) {
+
+        if(currentDepth>=MAX_DEPTH){
+            return Optional.empty();
+        }
 
         if (Operations.satisfies(background, start, goal)) {
             //Already satisfied. Do nothing. Return a set with an empty plan.
@@ -29,28 +45,37 @@ public class DepthFirstPlanner implements Planner {
 
         for (Action action : actions) {
 
-            Optional<Pair<State, Action>> nextStateActionPair = Operations.apply(background, action, start);
+            Optional<Set<Pair<State, Action>>> nextStateActionPairs = Operations.apply(background, action, start);
 
-            if (nextStateActionPair.isPresent()) {
+            if (nextStateActionPairs.isPresent()) {
 
-                Optional<Set<Plan>> planOpt = plan(background, actions, nextStateActionPair.get().first(), goal);
+                for (Pair<State, Action> stateActionPair : nextStateActionPairs.get()) {
 
-                if (planOpt.isPresent()) {
 
-                    atleastOnePlanFound = true;
-                    Set<Plan> nextPlans = planOpt.get();
 
-                    State nextSate  = nextStateActionPair.get().first();
-                    Action instantiatedAction = nextStateActionPair.get().second();
+                    Optional<Set<Plan>> planOpt = planInternal(history, currentDepth+1, background, actions, stateActionPair.first(), goal);
 
-                    Set<Plan> augmentedPlans = nextPlans.stream().
-                            map(plan -> plan.getPlanByStartingWith(instantiatedAction, nextSate)).
-                            collect(Collectors.toSet());
+                    if (planOpt.isPresent()) {
 
-                    allPlans.addAll(augmentedPlans);
-                    //TODO: store different plans and return the best plan.
+                        atleastOnePlanFound = true;
+                        Set<Plan> nextPlans = planOpt.get();
+
+                        State nextSate = stateActionPair.first();
+                        Action instantiatedAction = stateActionPair.second();
+
+                        Set<Plan> augmentedPlans = nextPlans.stream().
+                                map(plan -> plan.getPlanByStartingWith(instantiatedAction, nextSate)).
+                                collect(Collectors.toSet());
+
+                        allPlans.addAll(augmentedPlans);
+
+                        //TODO: store different plans and return the best plan.
+                    }
                 }
+
+
             }
+
 
         }
 
@@ -67,4 +92,5 @@ public class DepthFirstPlanner implements Planner {
 
 
     }
+
 }
