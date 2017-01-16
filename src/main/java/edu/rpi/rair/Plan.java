@@ -31,6 +31,10 @@ public class Plan {
         return actions;
     }
 
+    public List<State> getExpectedStates() {
+        return expectedStates;
+    }
+
     public Plan getPlanByStartingWith(Action action, State state){
         List<Action> newActions = CollectionUtils.newEmptyList();
         newActions.addAll(actions);

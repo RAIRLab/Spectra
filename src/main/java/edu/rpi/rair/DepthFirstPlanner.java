@@ -36,7 +36,7 @@ public class DepthFirstPlanner implements Planner {
 
         if (Operations.satisfies(background, start, goal)) {
             //Already satisfied. Do nothing. Return a set with an empty plan.
-            return Optional.of(Sets.with(Plan.newEmptyPlan(goal, background)));
+            return Optional.of(Sets.with(Plan.newEmptyPlan(start, background)));
         }
 
 

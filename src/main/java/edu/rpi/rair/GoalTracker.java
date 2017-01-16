@@ -3,7 +3,9 @@ package edu.rpi.rair;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
 import com.naveensundarg.shadow.prover.utils.Pair;
+import com.naveensundarg.shadow.prover.utils.Sets;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -50,16 +52,19 @@ public class GoalTracker {
 
             Set<Plan> plans = possiblePlans.get();
 
-            Optional<Plan> noConflictPlan = plans.stream().filter(plan -> plan.noConflicts(currentGoals)).findAny();
+            Optional<Plan> possibleNoConflictPlan = plans.stream().filter(plan -> plan.noConflicts(currentGoals)).
+                    sorted(Comparator.comparing(plan->plan.getActions().size())).findAny();
 
 
-            if (noConflictPlan.isPresent()) {
+            if (possibleNoConflictPlan.isPresent()) {
 
               /*
                * If there is any plan without any goal conflicts, then adopt the goal.
                */
+                Plan noConflictPlan = possibleNoConflictPlan.get();
                 currentGoals.add(goal);
-                return noConflictPlan;
+                currentState = noConflictPlan.getExpectedStates().get(noConflictPlan.getExpectedStates().size()-1);
+                return possibleNoConflictPlan;
 
             } else {
 
@@ -72,30 +77,35 @@ public class GoalTracker {
                */
 
                 boolean feasiblePlanExists = false;
+                int bestPlanSize = Integer.MAX_VALUE;
                 double bestPriorityGap = 0;
                 Set<Goal> bestRemovalCandidates = null;
-                Plan feasiblePlan = null;
+                Set<Plan> feasiblePlans = Sets.newSet();
                 for (Plan plan : plans) {
 
                     Set<Goal> conflictingGoals = plan.getConflictingGoals(currentGoals);
                     double conflictSum = conflictingGoals.stream().mapToDouble(Goal::getPriority).sum();
                     double gap = goal.getPriority() - conflictSum;
 
-                    if(gap > 0 && gap > bestPriorityGap ){
+                    if(gap > 0 && gap >= bestPriorityGap && plan.getActions().size() <= bestPlanSize){
 
                         feasiblePlanExists = true;
                         bestPriorityGap = gap;
-                        feasiblePlan = plan;
+                        bestPlanSize = plan.getActions().size();
+                        feasiblePlans.add(plan);
                         bestRemovalCandidates= conflictingGoals;
                     }
                 }
 
-                if(feasiblePlan!=null){
+                if(!feasiblePlans.isEmpty()){
 
+                    Plan bestPlan = feasiblePlans.stream().
+                            min(Comparator.comparing(plan->plan.getActions().stream().mapToInt(Action::getWeight).sum())).get();
                     currentGoals.removeAll(bestRemovalCandidates);
                     currentGoals.add(goal);
+                    currentState = bestPlan.getExpectedStates().get(bestPlan.getExpectedStates().size()-1);
 
-                    return Optional.of(feasiblePlan);
+                    return Optional.of(bestPlan);
                 }
                 else {
 
