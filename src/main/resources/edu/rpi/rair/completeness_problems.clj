@@ -127,7 +127,9 @@
                   (in prisoner room1)
                   (open (door room2))
                   (not (open (door room1)))]
+
  :goal           [(interrogates commander prisoner)]
+
  :actions
                  [(define-action open-door [?room]
                                  {:preconditions [(not (open (door ?room)))]
@@ -135,7 +137,8 @@
                                   :deletions     [(not (open (door ?room)))]})
 
 
-                  (define-action accompany[?person ?room1 ?room2]
+
+                  (define-action accompany [?person ?room1 ?room2]
                                  {:preconditions [(not (= ?room1 ?room2))
                                                   (in ?person ?room1)
                                                   (in self ?room1)
@@ -144,17 +147,18 @@
 
                                   :additions     [(in ?person ?room2)
                                                   (in self ?room2)]
+
                                   :deletions     [(in ?person ?room1)
                                                   (in self ?room1)]})
 
-                  (define-action request-move [?person ?room2 ?room1]
+                  (define-action move [?person ?room2 ?room1]
                                  {:preconditions [(not (= ?room1 ?room2))
                                                   (in ?person ?room2)
-                                                  (not (= ?person prisoner))
                                                   (open (door ?room1))
                                                   (open (door ?room2))]
 
                                   :additions     [(in ?person ?room1)]
+
                                   :deletions     [(in ?person ?room2)]})
 
                   (define-action get-interrogated [?room]
@@ -162,23 +166,20 @@
                                                   (in prisoner ?room)]
 
                                   :additions     [(interrogates commander prisoner)]
+
                                   :deletions     []})
                   ]
 
- :expected-plans (
+ :expected-plans ([(open-door room1)
+                    (move commander room2 room1)
+                    (get-interrogated room1)]
 
                    [(open-door room1)
-                    (request-move commander room2 room1)
-                    (get-interrogated room1)
-                    ]
+                    (move prisoner room1 room2)
+                    (get-interrogated room2)]
 
                    [(open-door room1)
                     (accompany prisoner room1 room2)
-                    (get-interrogated room2)
-                    ]
-
-                   )
-
- }
+                    (get-interrogated room2)])}
 
 

@@ -35,7 +35,6 @@ public class GoalTrackerTest {
         cp.println("Adding goal G1");
         cp.clear();
 
-        boolean res1  = goalTracker.adoptGoal(goalTrackingProblem.getGoalNamed("G1"));
 
         cp.setForegroundColor(Ansi.FColor.WHITE);
         cp.setBackgroundColor(Ansi.BColor.BLUE);   //setting format

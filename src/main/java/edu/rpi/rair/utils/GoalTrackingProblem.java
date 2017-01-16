@@ -66,7 +66,7 @@ public class GoalTrackingProblem {
                 String name = entry.getKey().toString();
                 Map<?, ?> goalSpec = (Map<?,?>)entry.getValue();
 
-                int priority = Math.toIntExact((Long) goalSpec.get(PRIORITY));
+                double priority = ((Double) goalSpec.get(PRIORITY));
                 Set<Formula> stateFormulae = PlanningProblem.readFrom((List<?>) goalSpec.get(STATE));
 
                 goals.add(Goal.makeGoal(State.initializeWith(stateFormulae), priority, name));

@@ -32,7 +32,7 @@ public class GoalTracker {
     }
 
 
-    public boolean adoptGoal(Goal goal) {
+    public Optional<Plan> adoptGoal(Goal goal) {
 
 
 
@@ -40,7 +40,7 @@ public class GoalTracker {
 
         if (!possiblePlans.isPresent()) {
 
-            return false;
+            return Optional.empty();
 
         } else if (possiblePlans.get().isEmpty()) {
 
@@ -50,14 +50,16 @@ public class GoalTracker {
 
             Set<Plan> plans = possiblePlans.get();
 
+            Optional<Plan> noConflictPlan = plans.stream().filter(plan -> plan.noConflicts(currentGoals)).findAny();
 
-            if (plans.stream().anyMatch(plan -> plan.noConflicts(currentGoals))) {
+
+            if (noConflictPlan.isPresent()) {
 
               /*
                * If there is any plan without any goal conflicts, then adopt the goal.
                */
                 currentGoals.add(goal);
-                return true;
+                return noConflictPlan;
 
             } else {
 
@@ -70,32 +72,34 @@ public class GoalTracker {
                */
 
                 boolean feasiblePlanExists = false;
-                int bestPriorityGap = 0;
+                double bestPriorityGap = 0;
                 Set<Goal> bestRemovalCandidates = null;
+                Plan feasiblePlan = null;
                 for (Plan plan : plans) {
 
                     Set<Goal> conflictingGoals = plan.getConflictingGoals(currentGoals);
-                    int conflictSum = conflictingGoals.stream().mapToInt(Goal::getPriority).sum();
-                    int gap = goal.getPriority() - conflictSum;
+                    double conflictSum = conflictingGoals.stream().mapToDouble(Goal::getPriority).sum();
+                    double gap = goal.getPriority() - conflictSum;
 
                     if(gap > 0 && gap > bestPriorityGap ){
 
                         feasiblePlanExists = true;
                         bestPriorityGap = gap;
+                        feasiblePlan = plan;
                         bestRemovalCandidates= conflictingGoals;
                     }
                 }
 
-                if(feasiblePlanExists){
+                if(feasiblePlan!=null){
 
                     currentGoals.removeAll(bestRemovalCandidates);
                     currentGoals.add(goal);
 
-                    return true;
+                    return Optional.of(feasiblePlan);
                 }
                 else {
 
-                    return false;
+                    return Optional.empty();
                 }
 
 
@@ -107,5 +111,7 @@ public class GoalTracker {
 
     }
 
-
+    public Set<Goal> getCurrentGoals() {
+        return currentGoals;
+    }
 }

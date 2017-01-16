@@ -8,31 +8,31 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Goal {
 
     private final State goalState;
-    private final int priority;
+    private final double priority;
     private final String name;
 
     private static final AtomicInteger nameCounter;
     static {
         nameCounter = new AtomicInteger(0);
     }
-    private Goal(State goalState, int priority) {
+    private Goal(State goalState, double priority) {
         this.goalState = goalState;
         this.priority = priority;
         this.name = "G"  + nameCounter.incrementAndGet();
     }
 
-    private Goal(State goalState, int priority, String name) {
+    private Goal(State goalState, double priority, String name) {
         this.goalState = goalState;
         this.priority = priority;
         this.name = name;
     }
-    public static Goal makeGoal(State goalState, int priority){
+    public static Goal makeGoal(State goalState, double priority){
 
         return new Goal(goalState, priority);
 
     }
 
-    public static Goal makeGoal(State goalState, int priority, String name){
+    public static Goal makeGoal(State goalState, double priority, String name){
 
         return new Goal(goalState, priority, name);
 
@@ -43,7 +43,7 @@ public class Goal {
         return goalState;
     }
 
-    public int getPriority() {
+    public double getPriority() {
         return priority;
     }
 
@@ -67,14 +67,19 @@ public class Goal {
 
         Goal goal = (Goal) o;
 
-        if (priority != goal.priority) return false;
-        return goalState.equals(goal.goalState);
+        if (Double.compare(goal.priority, priority) != 0) return false;
+        if (goalState != null ? !goalState.equals(goal.goalState) : goal.goalState != null) return false;
+        return name != null ? name.equals(goal.name) : goal.name == null;
     }
 
     @Override
     public int hashCode() {
-        int result = goalState.hashCode();
-        result = 31 * result + priority;
+        int result;
+        long temp;
+        result = goalState != null ? goalState.hashCode() : 0;
+        temp = Double.doubleToLongBits(priority);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
 }

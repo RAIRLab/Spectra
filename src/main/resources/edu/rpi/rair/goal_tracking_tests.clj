@@ -1,62 +1,84 @@
 {:definitions
- {:name       "Moving Between Rooms"
-  :background [(not (= room1 room2))
-               (forall [?x] (iff (Locked ?x) (not (Open ?x))))
-               (forall [?x ?y ?z] (if (and (In ?x ?y) (not (= ?z ?y)))
-                                    (not (In ?x ?z))))]
-  :start      [(In self room1)
-               (In commander room2)
-               (In prisoner room1)
-               (Open (door room2))
-               (not (Open (door room1)))]
-  :goal []
-  :actions
-              [(define-action open-door [?room]
-                              {:preconditions [(not (Open (door ?room)))]
-                               :additions     [(Open (door ?room))]
-                               :deletions     [(not (Open (door ?room)))]})
+ {:name           "demo 1"
+ :background     [
+                  (forall [?x ?room1 ?room2]
+                          (if (not (= ?room1 ?room2))
+                            (if (in ?x ?room1) (not (in ?x ?room2))) ))
+                  (not (= room1 room2))
+                  (not (= prisoner commander))
+                  (not (= self prisoner))
+                  (not (= self commander))
+                  (person prisoner)
+                  (person commander)
+                  ]
+ :start          [(in self room1)
+                  (in commander room2)
+                  (in prisoner room1)
+                  (open (door room2))
+                  (not (open (door room1)))]
 
-               (define-action move-thing-from-to [?thing ?room1 ?room2]
-                              {:preconditions [(not (= ?room1 ?room2))
-                                               (In ?thing ?room1)
-                                               (Open (door ?room1))
-                                               (Open (door ?room2))]
+ :goal           []
 
-                               :additions     [(In ?thing ?room2)]
-                               :deletions     [(In ?thing ?room1)
-                                               (In self ?room1)]})
-               (define-action accompany-from-to [?thing ?room1 ?room2]
-                              {:preconditions [(not (= ?room1 ?room2))
-                                               (In self ?room1)
-                                               (In ?thing ?room1)
-                                               (Open (door ?room1))
-                                               (Open (door ?room2))]
+ :actions
+                 [(define-action open-door [?room]
+                                 {:preconditions [(not (open (door ?room)))]
+                                  :additions     [(open (door ?room))]
+                                  :deletions     [(not (open (door ?room)))]})
 
-                               :additions     [(In ?thing ?room2)
-                                               (In ?self ?room2)]
-                               :deletions     [(In ?thing ?room1)
-                                               (In self ?room1)]})
 
-               (define-action interrogate [?A ?B]
-                              {:preconditions [(In ?room ?A)
-                                               (In ?room ?B)]
 
-                               :additions     [(Interrogates ?A ?B)]
-                               :deletions     [(In ?thing ?room1)
-                                               (In self ?room1)]})]
+                  (define-action accompany [?person ?room1 ?room2]
+                                 {:preconditions [(not (= ?room1 ?room2))
+                                                  (in ?person ?room1)
+                                                  (in self ?room1)
+                                                  (open (door ?room1))
+                                                  (open (door ?room2))]
+
+                                  :additions     [(in ?person ?room2)
+                                                  (in self ?room2)]
+
+                                  :deletions     [(in ?person ?room1)
+                                                  (in self ?room1)]})
+
+                  (define-action move [?person ?room2 ?room1]
+                                 {:preconditions [(not (= ?room1 ?room2))
+                                                  (in ?person ?room2)
+                                                  (open (door ?room1))
+                                                  (open (door ?room2))]
+
+                                  :additions     [(in ?person ?room1)]
+
+                                  :deletions     [(in ?person ?room2)]})
+
+                  (define-action get-interrogated [?room]
+                                 {:preconditions [(in commander ?room)
+                                                  (in prisoner ?room)]
+
+                                  :additions     [(interrogates commander prisoner)]
+
+                                  :deletions     []})
+                  ]
 }
 
-  :goals      {G1 {:priority 1
-                   :state    [(not (Open (door room1)))]}
+  :goals      {G1 {:priority 1.0
+                   :state    [(not (open (door room1)))]}
 
-               G2 {:priority 1
-                   :state    [(In prisoner room1)]}
+               G2 {:priority 1.0
+                   :state    [(in prisoner room1)]}
 
-               G3 {:priority 1
+               G3 {:priority 1.0
                    :state    [(forall [?room]
-                                      (if (In prisoner ?room)
-                                        (In self ?room)))]
-                   }
+                                      (if (in prisoner ?room)
+                                        (in self ?room)))]}
+
+               G4 {:priority 2.0
+
+                   :state [(interrogates commander prisoner)]}
+
+               G5 {:priority 1.0
+                   :state [(in prisoner room2)
+                       (in self room2)]}
+
 
                }
 
