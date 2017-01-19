@@ -34,6 +34,13 @@ public class GoalTracker {
     }
 
 
+    public void deleteGoal(Goal goal){
+
+        currentGoals.remove(goal);
+
+    }
+
+   
     public Optional<Plan> adoptGoal(Goal goal) {
 
 
