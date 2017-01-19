@@ -41,7 +41,7 @@
   (snark:use-hyperresolution t)
   (snark:use-paramodulation t)
 
-  (snark:allow-skolem-symbols-in-answers nil))
+  (snark:allow-skolem-symbols-in-answers t))
 
 (defun row-formula (name))
 

@@ -27,7 +27,9 @@ import static edu.rpi.rair.State.FALSE;
 public class Operations {
 
     private static boolean DEEP_EQUIVALENCE = false;
+    private static boolean THROW_AWAY_EMPTY_BINDINGS = false;
     private static Prover prover;
+
 
     static{
         prover = new SnarkWrapper();
@@ -93,9 +95,9 @@ public class Operations {
         Set<Pair<State,Action>> nexts = Sets.newSet();
         for(Map<Variable, Value> binding: bindingsOpt.get()){
 
-            if(binding.values().stream().anyMatch(x-> x instanceof Variable)){
+            if(THROW_AWAY_EMPTY_BINDINGS && binding.values().stream().anyMatch(x-> x instanceof Variable)){
 
-                continue;
+               continue;
             }
 
         Set<Formula> instantiatedDeletions =  action.instantiateDeletions(binding);
