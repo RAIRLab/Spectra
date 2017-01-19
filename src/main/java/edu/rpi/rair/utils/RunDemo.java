@@ -22,7 +22,7 @@ public class RunDemo {
     public static void main(String[] args) throws Reader.ParsingException {
 
 
-        List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_tracking_tests.clj")));
+        List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_2.clj")));
 
 
         GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);
@@ -31,18 +31,25 @@ public class RunDemo {
                 goalTrackingProblem.getPlanningProblem().getStart(),
                 goalTrackingProblem.getPlanningProblem().getActions());
 
+        long start = System.currentTimeMillis();
 
         Goal g1 = goalTrackingProblem.getGoalNamed("G1");
         Goal g2 = goalTrackingProblem.getGoalNamed("G2");
-        Goal g3 = goalTrackingProblem.getGoalNamed("G3");
-        Goal g4 = goalTrackingProblem.getGoalNamed("G4");
-        Goal g5 = goalTrackingProblem.getGoalNamed("G5");
 
         tryAndAddGoal(g1, goalTracker);
         tryAndAddGoal(g2, goalTracker);
-        tryAndAddGoal(g3, goalTracker);
-        tryAndAddGoal(g4, goalTracker);
-        tryAndAddGoal(g5, goalTracker);
+
+        long end = System.currentTimeMillis();
+
+        cp.println("--------------------------");
+        cp.setForegroundColor(Ansi.FColor.CYAN);
+
+        cp.print("Time Taken:");
+        cp.clear();
+        cp.print(" ");
+        cp.setAttribute(Ansi.Attribute.BOLD);
+        cp.print((end-start)/1000 + "s");
+
 
 
     }

@@ -57,6 +57,13 @@
                                   :additions     [(interrogates commander prisoner)]
 
                                   :deletions     []})
+
+                  (define-action stay-put [?x ?y]
+                                 {:preconditions [(sameroom ?x ?y)]
+
+                                 :additions     [(sameroom ?x ?y)]
+
+                                 :deletions     []})
                   ]
 }
 

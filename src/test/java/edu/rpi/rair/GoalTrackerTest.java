@@ -17,7 +17,7 @@ public class GoalTrackerTest {
 
     public static void main(String[] args) throws Reader.ParsingException {
 
-        List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_tracking_tests.clj")));
+        List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_1.clj")));
 
 
         GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);
