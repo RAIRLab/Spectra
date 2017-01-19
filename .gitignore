@@ -21,14 +21,5 @@ planner.iml
 .idea/libraries/Maven__org_testng_testng_6_8.xml
 .idea/libraries/Maven__org_yaml_snakeyaml_1_6.xml
 .idea/libraries/Maven__us_bpsm_edn_java_0_5_0.xml
-target/classes/edu/rpi/rair/Action.class
-target/classes/edu/rpi/rair/completeness_problems.clj
-target/classes/edu/rpi/rair/DepthFirstPlanner.class
-target/classes/edu/rpi/rair/Goal.class
-target/classes/edu/rpi/rair/GoalTracker.class
-target/classes/edu/rpi/rair/Operations.class
-target/classes/edu/rpi/rair/Plan.class
-target/classes/edu/rpi/rair/Planner.class
-target/classes/edu/rpi/rair/State.class
-target/classes/edu/rpi/rair/utils/PlanningProblem.class
-target/test-classes/edu/rpi/rair/DepthFirstPlannerTest.class
+target/*
+
