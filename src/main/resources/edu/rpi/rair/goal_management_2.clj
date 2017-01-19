@@ -16,7 +16,7 @@
                   (not (open (door room1)))
 
                   (forall [?x ?y ?room] (implies (and (and (in ?x ?room) (in ?y ?room)) (not (= ?x ?y))) (sameroom ?x ?y)))
-                  (forall [?x ?y] (exists ?room (implies (sameroom ?x ?y) (and (in ?x ?room) (in ?y ?room)) )) )
+                  (forall [?x ?y] (implies (sameroom ?x ?y) (exists ?room (and (in ?x ?room) (in ?y ?room)))))
                   ]
 
  :goal           []
