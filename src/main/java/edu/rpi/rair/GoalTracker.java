@@ -34,14 +34,35 @@ public class GoalTracker {
     }
 
 
-    public void deleteGoal(Goal goal){
+    public synchronized boolean deleteGoal(Goal goal){
 
-        currentGoals.remove(goal);
+        return currentGoals.remove(goal);
 
     }
 
-   
-    public Optional<Plan> adoptGoal(Goal goal) {
+    public synchronized boolean addToBackground(Formula formula){
+
+        return background.add(formula);
+    }
+
+     public synchronized boolean addAllToBackground(Set<Formula> formulae){
+
+        return background.addAll(formulae);
+    }
+
+    public synchronized boolean deleteFromBackground(Formula formula){
+
+        return background.remove(formula);
+    }
+
+     public synchronized boolean removeAllFromBackground(Set<Formula> formulae){
+
+        return background.removeAll(formulae);
+    }
+
+
+
+    public synchronized Optional<Plan> adoptGoal(Goal goal) {
 
 
 
