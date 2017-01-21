@@ -15,9 +15,24 @@ import java.util.stream.Collectors;
 public class DepthFirstPlanner implements Planner {
 
 
-    private static final int MAX_DEPTH = 4;
-    private static final boolean EXHAUSTIVE_TILL_MAX_DEPTH = true;
+    private static  int MAX_DEPTH = 4;
+    private static  boolean EXHAUSTIVE_TILL_MAX_DEPTH = true;
 
+    public static int getMaxDepth() {
+        return MAX_DEPTH;
+    }
+
+    public static boolean isExhaustiveTillMaxDepth() {
+        return EXHAUSTIVE_TILL_MAX_DEPTH;
+    }
+
+    public static void setMaxDepth(int maxDepth) {
+        MAX_DEPTH = maxDepth;
+    }
+
+    public static void setExhaustiveTillMaxDepth(boolean exhaustiveTillMaxDepth) {
+        EXHAUSTIVE_TILL_MAX_DEPTH = exhaustiveTillMaxDepth;
+    }
 
     @Override
     public Optional<Set<Plan>> plan(Set<Formula> background, Set<Action> actions, State start, State goal) {
