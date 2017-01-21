@@ -5,6 +5,7 @@ import com.naveensundarg.shadow.prover.utils.CollectionUtils;
 import com.naveensundarg.shadow.prover.utils.Pair;
 import com.naveensundarg.shadow.prover.utils.Sets;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -15,22 +16,40 @@ public class DepthFirstPlanner implements Planner {
 
 
     private static final int MAX_DEPTH = 4;
+    private static final boolean EXHAUSTIVE_TILL_MAX_DEPTH = true;
 
 
     @Override
     public Optional<Set<Plan>> plan(Set<Formula> background, Set<Action> actions, State start, State goal) {
 
 
-       return planInternal(Sets.newSet(), 0, background, actions, start, goal);
+       if (!EXHAUSTIVE_TILL_MAX_DEPTH) {
+
+            return planInternal(Sets.newSet(), 0, MAX_DEPTH, background, actions, start, goal);
+
+       } else {
+
+            for (int i = 1; i <= MAX_DEPTH; i++) {
+
+                Optional<Set<Plan>> plans = planInternal(Sets.newSet(), 0, i, background, actions, start, goal);
+
+                if (plans.isPresent()) {
+                    return plans;
+                }
+
+            }
+//
+          return Optional.empty();
+
+       }
 
 
     }
 
 
+    private Optional<Set<Plan>> planInternal(Set<Pair<State, Action>> history, int currentDepth, int maxDepth, Set<Formula> background, Set<Action> actions, State start, State goal) {
 
-    private Optional<Set<Plan>> planInternal(Set<Pair<State, Action>> history, int currentDepth, Set<Formula> background, Set<Action> actions, State start, State goal) {
-
-        if(currentDepth>=MAX_DEPTH){
+        if (currentDepth >= maxDepth) {
             return Optional.empty();
         }
 
@@ -52,8 +71,7 @@ public class DepthFirstPlanner implements Planner {
                 for (Pair<State, Action> stateActionPair : nextStateActionPairs.get()) {
 
 
-
-                    Optional<Set<Plan>> planOpt = planInternal(history, currentDepth+1, background, actions, stateActionPair.first(), goal);
+                    Optional<Set<Plan>> planOpt = planInternal(history, currentDepth + 1, maxDepth, background, actions, stateActionPair.first(), goal);
 
                     if (planOpt.isPresent()) {
 

@@ -2,6 +2,11 @@ package edu.rpi.rair.utils;
 
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
+import com.naveensundarg.shadow.prover.Sandbox;
+import com.naveensundarg.shadow.prover.core.Problem;
+import com.naveensundarg.shadow.prover.core.Prover;
+import com.naveensundarg.shadow.prover.core.SnarkWrapper;
+import com.naveensundarg.shadow.prover.utils.ProblemReader;
 import com.naveensundarg.shadow.prover.utils.Reader;
 import edu.rpi.rair.Goal;
 import edu.rpi.rair.GoalTracker;
@@ -19,37 +24,124 @@ public class RunDemo {
 
     static ColoredPrinter cp = new ColoredPrinter.Builder(1, false).build();
 
+
+    static {
+
+        Prover prover = new SnarkWrapper();
+        try {
+            List<Problem> problems = ProblemReader.readFrom(Sandbox.class.getResourceAsStream("firstorder-completness-tests.clj"));
+
+            problems.forEach(problem -> {
+                for (int i = 0; i < 5; i++) {
+                    prover.prove(problem.getAssumptions(), problem.getGoal());
+
+                }
+            });
+
+            planningProblemWarmUp();
+            System.out.println("WARM UP DONE");
+        } catch (Reader.ParsingException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
     public static void main(String[] args) throws Reader.ParsingException {
 
 
-        List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_2.clj")));
+
+            System.out.println();
+
+            List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_3.clj")));
 
 
-        GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);
+            GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);
 
-        GoalTracker goalTracker = new GoalTracker(goalTrackingProblem.getPlanningProblem().getBackground(),
-                goalTrackingProblem.getPlanningProblem().getStart(),
-                goalTrackingProblem.getPlanningProblem().getActions());
+            GoalTracker goalTracker = new GoalTracker(goalTrackingProblem.getPlanningProblem().getBackground(),
+                    goalTrackingProblem.getPlanningProblem().getStart(),
+                    goalTrackingProblem.getPlanningProblem().getActions());
 
-        long start = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
 
-        Goal g1 = goalTrackingProblem.getGoalNamed("G1");
-        Goal g2 = goalTrackingProblem.getGoalNamed("G2");
+            Goal g1 = goalTrackingProblem.getGoalNamed("G1");
+            Goal g2 = goalTrackingProblem.getGoalNamed("G2");
+            Goal g3 = goalTrackingProblem.getGoalNamed("G3");
+            Goal g4 = goalTrackingProblem.getGoalNamed("G4");
 
-        tryAndAddGoal(g1, goalTracker);
-        tryAndAddGoal(g2, goalTracker);
 
-        long end = System.currentTimeMillis();
+            tryAndAddGoal(g1, goalTracker);
 
-        cp.println("--------------------------");
-        cp.setForegroundColor(Ansi.FColor.CYAN);
+            tryAndAddGoal(g2, goalTracker);
 
-        cp.print("Time Taken:");
-        cp.clear();
-        cp.print(" ");
-        cp.setAttribute(Ansi.Attribute.BOLD);
-        cp.print((end-start)/1000 + "s");
+            tryAndAddGoal(g3, goalTracker);
 
+            tryAndAddGoal(g4, goalTracker);
+
+
+            long end = System.currentTimeMillis();
+
+            cp.println("--------------------------");
+            cp.setForegroundColor(Ansi.FColor.CYAN);
+
+            cp.print("Time Taken:");
+            cp.clear();
+            cp.print(" ");
+            cp.setAttribute(Ansi.Attribute.BOLD);
+            cp.print((end - start) / 1000 + "s");
+
+
+
+    }
+
+    public static void planningProblemWarmUp() throws Reader.ParsingException {
+
+
+        for (int i = 0; i < 5; i++) {
+
+            System.out.println();
+
+            List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_1.clj")));
+
+
+            GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);
+
+            GoalTracker goalTracker = new GoalTracker(goalTrackingProblem.getPlanningProblem().getBackground(),
+                    goalTrackingProblem.getPlanningProblem().getStart(),
+                    goalTrackingProblem.getPlanningProblem().getActions());
+
+            long start = System.currentTimeMillis();
+
+            Goal g1 = goalTrackingProblem.getGoalNamed("G1");
+            Goal g2 = goalTrackingProblem.getGoalNamed("G2");
+            Goal g3 = goalTrackingProblem.getGoalNamed("G3");
+            Goal g4 = goalTrackingProblem.getGoalNamed("G4");
+            Goal g5 = goalTrackingProblem.getGoalNamed("G5");
+
+
+            goalTracker.adoptGoal(g1);
+
+            System.out.print(".");
+
+            goalTracker.adoptGoal(g2);
+
+
+            System.out.print(".");
+
+            goalTracker.adoptGoal(g3);
+
+            System.out.print(".");
+
+            goalTracker.adoptGoal(g4);
+
+            System.out.print(".");
+
+            goalTracker.adoptGoal(g5);
+
+            System.out.print(".");
+
+
+        }
 
 
     }
@@ -57,20 +149,20 @@ public class RunDemo {
     static void tryAndAddGoal(Goal g, GoalTracker goalTracker) {
 
         System.out.println("========================");
-        printInfo("Trying to Add Goal:",  g.getName());
+        printInfo("Trying to Add Goal:", g.getName());
 
         Optional<Plan> possibleGoalPlan = goalTracker.adoptGoal(g);
         if (possibleGoalPlan.isPresent()) {
 
-            printSuccess("Successfully added:" ,  g.getName());
-            printDebug1("Current Goals:" , goalTracker.getCurrentGoals().stream().map(Goal::getName).collect(Collectors.toSet()).toString());
+            printSuccess("Successfully added:", g.getName());
+            printDebug1("Current Goals:", goalTracker.getCurrentGoals().stream().map(Goal::getName).collect(Collectors.toSet()).toString());
             Plan plan = possibleGoalPlan.get();
-            printDebug2("Plan:" , plan.getActions().isEmpty()? "No plan needed. Already satisfied." : plan.getActions().toString() );
+            printDebug2("Plan:", plan.getActions().isEmpty() ? "No plan needed. Already satisfied." : plan.getActions().toString());
 
         } else {
 
             printFailure("Could not add " + g.getName());
-            printDebug1("Current Goals: " , goalTracker.getCurrentGoals().stream().map(Goal::getName).collect(Collectors.toSet()).toString());
+            printDebug1("Current Goals: ", goalTracker.getCurrentGoals().stream().map(Goal::getName).collect(Collectors.toSet()).toString());
 
         }
 
@@ -103,8 +195,6 @@ public class RunDemo {
     }
 
 
-
-
     static void printDebug1(String header, String message) {
 
         cp.setForegroundColor(Ansi.FColor.BLACK);
@@ -118,7 +208,7 @@ public class RunDemo {
         cp.clear();
     }
 
-     static void printDebug2(String header, String message) {
+    static void printDebug2(String header, String message) {
 
         cp.setForegroundColor(Ansi.FColor.BLACK);
         cp.setBackgroundColor(Ansi.BColor.MAGENTA);   //setting format
@@ -130,6 +220,7 @@ public class RunDemo {
         cp.println("");
         cp.clear();
     }
+
     static void printFailure(String message) {
 
         cp.setForegroundColor(Ansi.FColor.WHITE);

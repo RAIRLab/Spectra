@@ -1,7 +1,6 @@
 {:definitions
  {:name           "demo 1"
- :background     [
-                  (forall [?x ?room1 ?room2]
+ :background     [(forall [?x ?room1 ?room2]
                           (if (not (= ?room1 ?room2))
                             (if (in ?x ?room1) (not (in ?x ?room2))) ))
                   (not (= room1 room2))
@@ -9,8 +8,8 @@
                   (not (= self prisoner))
                   (not (= self commander))
                   (person prisoner)
-                  (person commander)
-                  ]
+                  (person commander)]
+
  :start          [(in self room1)
                   (in commander room2)
                   (in prisoner room1)
@@ -67,20 +66,20 @@
                   ]
 }
 
-  :goals      {G1 {:priority 6.0
+  :goals      {G1 {:priority 1.0
                    :state    [(not (open (door room1)))]}
 
-               G2 {:priority 6.0
+               G2 {:priority 1.0
                    :state    [(in prisoner room1)]}
 
-               G3 {:priority 6.0
+               G3 {:priority 1.0
                    :state    [(forall [?room]
                                       (if (in prisoner ?room)
                                         (in self ?room)))]}
-               G4  {:priority 3.0
-                   :state [(in prisoner room2)
+               G4  {:priority 1.0
+                    :state [(in prisoner room2)
                            (in self room2)]}
-               G5 {:priority 2.0
+               G5 {:priority 1.0
 
                    :state [(interrogates commander prisoner)]}}
 
