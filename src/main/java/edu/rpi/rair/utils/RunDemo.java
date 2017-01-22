@@ -32,13 +32,13 @@ public class RunDemo {
             List<Problem> problems = ProblemReader.readFrom(Sandbox.class.getResourceAsStream("firstorder-completness-tests.clj"));
 
             problems.forEach(problem -> {
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 10; i++) {
                     prover.prove(problem.getAssumptions(), problem.getGoal());
 
                 }
             });
 
-            planningProblemWarmUp();
+           planningProblemWarmUp();
             System.out.println("\nWARM UP DONE");
         } catch (Reader.ParsingException e) {
             e.printStackTrace();
@@ -88,7 +88,7 @@ public class RunDemo {
             cp.clear();
             cp.print(" ");
             cp.setAttribute(Ansi.Attribute.BOLD);
-            cp.print((end - start) / 1000 + "s");
+            cp.print((end - start) / 1000.0 + "s");
 
 
 
@@ -97,9 +97,8 @@ public class RunDemo {
     public static void planningProblemWarmUp() throws Reader.ParsingException {
 
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
 
-            System.out.println();
 
             List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_1.clj")));
 
@@ -121,20 +120,14 @@ public class RunDemo {
 
             goalTracker.adoptGoal(g1);
 
-            System.out.print(".");
-
             goalTracker.adoptGoal(g2);
 
 
-            System.out.print(".");
-
             goalTracker.adoptGoal(g3);
 
-            System.out.print(".");
 
             goalTracker.adoptGoal(g4);
 
-            System.out.print(".");
 
             goalTracker.adoptGoal(g5);
 

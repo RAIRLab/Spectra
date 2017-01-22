@@ -6,6 +6,7 @@ import com.naveensundarg.shadow.prover.representations.value.Compound;
 import com.naveensundarg.shadow.prover.representations.value.Value;
 import com.naveensundarg.shadow.prover.representations.value.Variable;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
+import com.naveensundarg.shadow.prover.utils.Logic;
 import com.naveensundarg.shadow.prover.utils.Sets;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class Action {
     private final Formula precondition;
 
     private int weight;
+    private final boolean  trivial;
 
     private final Compound shorthand;
 
@@ -52,6 +54,8 @@ public class Action {
 
         List<Value> valuesList = freeVariables.stream().collect(Collectors.toList());;
         this.shorthand = new Compound(name, valuesList);
+
+        this.trivial = computeTrivialOrNot();
     }
 
     private Action(String name, Set<Formula> preconditions, Set<Formula> additions,
@@ -78,6 +82,8 @@ public class Action {
                 deletions.stream().mapToInt(Formula::getWeight).sum();
 
         this.shorthand = shorthand;
+        this.trivial = computeTrivialOrNot();
+
     }
 
 
@@ -139,12 +145,19 @@ public class Action {
         return name;
     }
 
+    public boolean isNonTrivial() {
+        return !trivial;
+    }
 
-    public boolean isNonTrivial(){
+    public boolean computeTrivialOrNot(){
 
         boolean case1Trivial =  Sets.subset(additions, preconditions) && deletions.isEmpty();
 
-        return !case1Trivial;
+        boolean case2Trivial =  additions.isEmpty() && deletions.stream().allMatch(x->preconditions.stream().anyMatch(y->y.equals(Logic.negated(x))));
+
+        boolean trivial = case1Trivial || case2Trivial;
+
+        return trivial;
     }
     @Override
     public String toString() {
