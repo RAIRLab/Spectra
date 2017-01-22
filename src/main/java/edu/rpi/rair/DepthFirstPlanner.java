@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 public class DepthFirstPlanner implements Planner {
 
 
-    private static  int MAX_DEPTH = 4;
-    private static  boolean EXHAUSTIVE_TILL_MAX_DEPTH = true;
+    private static  int MAX_DEPTH = 3;
+    private static  boolean EXHAUSTIVE_TILL_MAX_DEPTH = false;
 
     public static int getMaxDepth() {
         return MAX_DEPTH;
@@ -77,7 +77,7 @@ public class DepthFirstPlanner implements Planner {
         Set<Plan> allPlans = Sets.newSet();
         boolean atleastOnePlanFound = false;
 
-        for (Action action : actions) {
+        for (Action action : actions.stream().filter(Action::isNonTrivial).collect(Collectors.toSet())) {
 
             Optional<Set<Pair<State, Action>>> nextStateActionPairs = Operations.apply(background, action, start);
 

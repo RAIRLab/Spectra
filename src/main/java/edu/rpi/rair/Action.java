@@ -140,6 +140,12 @@ public class Action {
     }
 
 
+    public boolean isNonTrivial(){
+
+        boolean case1Trivial =  Sets.subset(additions, preconditions) && deletions.isEmpty();
+
+        return !case1Trivial;
+    }
     @Override
     public String toString() {
         return shorthand.getArguments().length == 0?  name: shorthand.toString();

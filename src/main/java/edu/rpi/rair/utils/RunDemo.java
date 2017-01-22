@@ -1,5 +1,4 @@
 package edu.rpi.rair.utils;
-
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
 import com.naveensundarg.shadow.prover.Sandbox;
@@ -12,6 +11,7 @@ import edu.rpi.rair.Goal;
 import edu.rpi.rair.GoalTracker;
 import edu.rpi.rair.Plan;
 import edu.rpi.rair.Planner;
+import edu.rpi.rair.utils.GoalTrackingProblem;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +39,7 @@ public class RunDemo {
             });
 
             planningProblemWarmUp();
-            System.out.println("WARM UP DONE");
+            System.out.println("\nWARM UP DONE");
         } catch (Reader.ParsingException e) {
             e.printStackTrace();
         }

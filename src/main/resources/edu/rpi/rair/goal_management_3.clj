@@ -35,7 +35,7 @@
                                                       (in ?person ?room2)
                                                       (open (door ?room2))]
                                       :additions     [(in ?person ?room1)]
-                                      :deletions     [(in ?person ?room1)]
+                                      :deletions     [(in ?person ?room2)]
                                       })
                       (define-action keepDoorClosed [?actor ?room]
                                      {:preconditions [(robot ?actor)
