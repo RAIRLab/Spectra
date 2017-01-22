@@ -32,7 +32,7 @@ public class RunDemo {
             List<Problem> problems = ProblemReader.readFrom(Sandbox.class.getResourceAsStream("firstorder-completness-tests.clj"));
 
             problems.forEach(problem -> {
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 100; i++) {
                     prover.prove(problem.getAssumptions(), problem.getGoal());
 
                 }
