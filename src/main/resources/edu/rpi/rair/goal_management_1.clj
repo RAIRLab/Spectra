@@ -79,7 +79,7 @@
                G4  {:priority 1.0
                     :state [(in prisoner room2)
                            (in self room2)]}
-               G5 {:priority 3
+               G5 {:priority 3.0
 
                    :state [(interrogates commander prisoner)]}}
 

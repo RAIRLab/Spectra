@@ -38,7 +38,7 @@ public class RunDemo {
                 }
             });
 
-           planningProblemWarmUp();
+          // planningProblemWarmUp();
             System.out.println("\nWARM UP DONE");
         } catch (Reader.ParsingException e) {
             e.printStackTrace();
@@ -53,7 +53,7 @@ public class RunDemo {
 
             System.out.println();
 
-            List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_1.clj")));
+            List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_6.clj")));
 
 
             GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);
@@ -65,14 +65,17 @@ public class RunDemo {
             long start = System.currentTimeMillis();
 
             Goal g1 = goalTrackingProblem.getGoalNamed("G1");
-            Goal g2 = goalTrackingProblem.getGoalNamed("G2");
+            Goal g2a = goalTrackingProblem.getGoalNamed("G2a");
+        Goal g2b = goalTrackingProblem.getGoalNamed("G2b");
+
             Goal g3 = goalTrackingProblem.getGoalNamed("G3");
             Goal g4 = goalTrackingProblem.getGoalNamed("G4");
 
 
             tryAndAddGoal(g1, goalTracker);
 
-            tryAndAddGoal(g2, goalTracker);
+            tryAndAddGoal(g2a, goalTracker);
+            tryAndAddGoal(g2b, goalTracker);
 
             tryAndAddGoal(g3, goalTracker);
 
