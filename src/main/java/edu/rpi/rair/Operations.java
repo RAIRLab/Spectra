@@ -67,7 +67,7 @@ public class Operations {
         }).findAny();
 
 
-        if(cachedOptional.isPresent()){
+        if(cachedOptional.isPresent() && cachedOptional.get().getValue().isPresent()){
 
             return cachedOptional.get().getValue();
         }

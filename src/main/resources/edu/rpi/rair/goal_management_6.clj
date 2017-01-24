@@ -157,16 +157,13 @@
  :goals {G1 {:priority 1.0
              :state    [(not (open (door room1)))]}
 
-         G2a {:priority 1.0
+         G2 {:priority 1.0
              :state    [(in prisoner room1)]}
-
-         G2b {:priority 1.0
-             :state    [(in guard room1)]}
 
          G3 {:priority 1.0
              :state    [(sameroom guard prisoner)]}
 
-         G4 {:priority 2.1
+         G4 {:priority 2.0
              :state    [(accompanies prisoner commander)]}
          }
 
