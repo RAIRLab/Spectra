@@ -32,7 +32,7 @@ public class RunDemo {
             List<Problem> problems = ProblemReader.readFrom(Sandbox.class.getResourceAsStream("firstorder-completness-tests.clj"));
 
             problems.forEach(problem -> {
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 10; i++) {
                     prover.prove(problem.getAssumptions(), problem.getGoal());
 
                 }
@@ -53,7 +53,7 @@ public class RunDemo {
 
             System.out.println();
 
-            List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_3.clj")));
+            List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_1.clj")));
 
 
             GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);

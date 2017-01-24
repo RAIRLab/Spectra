@@ -31,6 +31,8 @@ public class GoalTracker {
         this.currentGoals = CollectionUtils.newEmptySet();
         this.planner = new DepthFirstPlanner();
         this.actions = actions;
+
+        Operations.reset();
     }
 
 
