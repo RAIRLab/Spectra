@@ -3,8 +3,10 @@ package edu.rpi.rair;
 import com.naveensundarg.shadow.prover.core.Prover;
 import com.naveensundarg.shadow.prover.core.SnarkWrapper;
 import com.naveensundarg.shadow.prover.core.proof.Justification;
+import com.naveensundarg.shadow.prover.core.proof.TrivialJustification;
 import com.naveensundarg.shadow.prover.representations.formula.BiConditional;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
+import com.naveensundarg.shadow.prover.representations.formula.Predicate;
 import com.naveensundarg.shadow.prover.representations.value.Value;
 import com.naveensundarg.shadow.prover.representations.value.Variable;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
@@ -58,7 +60,7 @@ public class Operations {
 
         }
 
-        Optional<Map.Entry<Pair<Set<Formula>, Formula>, Optional<Justification>>> cachedOptional = proverCache.entrySet().stream().filter(pairOptionalEntry -> {
+        Optional<Map.Entry<Pair<Set<Formula>, Formula>, Optional<Justification>>> cachedOptionalSuccessful = proverCache.entrySet().stream().filter(pairOptionalEntry -> {
 
             Set<Formula> cachedAssumptions = pairOptionalEntry.getKey().first();
             Formula cachedGoal = pairOptionalEntry.getKey().second();
@@ -67,9 +69,53 @@ public class Operations {
         }).findAny();
 
 
-        if(cachedOptional.isPresent() && cachedOptional.get().getValue().isPresent()){
+        if(cachedOptionalSuccessful.isPresent() && cachedOptionalSuccessful.get().getValue().isPresent()){
 
-            return cachedOptional.get().getValue();
+            return cachedOptionalSuccessful.get().getValue();
+        }
+
+
+        Optional<Map.Entry<Pair<Set<Formula>, Formula>, Optional<Justification>>> cachedOptionalFailed = proverCache.entrySet().stream().filter(pairOptionalEntry -> {
+
+            Set<Formula> cachedAssumptions = pairOptionalEntry.getKey().first();
+            Formula cachedGoal = pairOptionalEntry.getKey().second();
+
+            return cachedGoal.equals(goal) && Sets.subset(assumptions, cachedAssumptions);
+        }).findAny();
+
+
+        if(cachedOptionalFailed.isPresent() && !cachedOptionalFailed.get().getValue().isPresent()){
+
+            return cachedOptionalFailed.get().getValue();
+        }
+
+        if(goal instanceof Predicate && ((Predicate) goal).getName().equals("sameroom")){
+
+            Predicate p = (Predicate) goal;
+
+            Value v1 = p.getArguments()[0];
+            Value v2 = p.getArguments()[1];
+
+            Optional<Formula> inOptv1 = assumptions.stream().filter(x-> x instanceof Predicate &&
+                    ((Predicate)x).getName().equals("in") && ((Predicate) x).getArguments()[0].equals(v1)).findAny();
+
+             Optional<Formula> inOptv2 = assumptions.stream().filter(x-> x instanceof Predicate &&
+                    ((Predicate)x).getName().equals("in") && ((Predicate) x).getArguments()[0].equals(v2)).findAny();
+
+
+             if(inOptv1.isPresent() && inOptv2.isPresent()){
+
+                 Value room1 = ((Predicate)inOptv1.get()).getArguments()[1];
+                 Value room2 = ((Predicate)inOptv2.get()).getArguments()[1];
+
+                 if(room1.equals(room2)){
+
+                     return Optional.of(Justification.trivial(goal));
+                 }
+
+             }
+
+
         }
 
         {
@@ -178,7 +224,7 @@ public class Operations {
             Set<Formula> formulaeToRemove = state.getFormulae().stream().
                     filter(f -> instantiatedDeletions.stream().anyMatch(d -> equivalent(background, f, d))).collect(Collectors.toSet());
 
-            Set<Formula> newFormulae = state.getFormulae();
+            Set<Formula> newFormulae = Sets.union(background, state.getFormulae());
 
             newFormulae = Sets.union(newFormulae, action.instantiateAdditions(binding));
 

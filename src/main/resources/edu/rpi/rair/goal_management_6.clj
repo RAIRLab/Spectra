@@ -32,30 +32,10 @@
                      (open (door room2))
                      (open (door hallway))
 
-                     (forall (?robot ?prisoner ?commander)
-                        (implies (and (and (robot ?robot) (prisoner ?prisoner)) (commander ?commander))
-                        (can accompany ?robot ?prisoner ?commander)))
 
-                     (forall (?commander ?prisoner ?person)
-                        (implies (and (and (commander ?commander) (prisoner ?prisoner)) (person ?person))
-                        (can accompany ?commander ?prisoner ?person)))
 
-                     (forall (?robot ?commander ?person)
-                        (implies (and (and (and (robot ?robot) (commander ?commander)) (person ?person))
-                                    (needs ?commander (interrogate ?person)))
-                        (can accompany ?robot ?commander ?person)))
 
-                      (forall (?room ?x ?y)
-                        (implies (and (in ?x ?room) (and (in ?y ?room) (not (= ?x ?y))))
-                        (sameroom ?x ?y)))
 
-                      (forall (?room2 ?x ?room1)
-                        (implies (and (not (= ?room1 ?room2)) (in ?x ?room1))
-                        (not (in ?x ?room2))))
-
-                      (forall (?room ?x ?y)
-                        (implies (and (sameroom ?x ?y) (in ?x ?room))
-                        (in ?y ?room)))
 
 
                      (needs commander (interrogate prisoner))
@@ -91,7 +71,7 @@
                                      {:preconditions [(robot ?actor)
                                                       (person ?person1)
                                                       (person ?person2)
-                                                      (can accompany ?actor ?person1 ?person2)
+                                                      ;  (can accompany ?actor ?person1 ?person2)
                                                       (room ?room1)
                                                       (room ?room2)
                                                       (in ?actor ?room1)
@@ -114,7 +94,7 @@
                                      {:preconditions [(robot ?actor)
                                                       (person ?person1)
                                                       (person ?person2)
-                                                      (can accompany ?actor ?person1 ?person2)
+                                                      ; (can accompany ?actor ?person1 ?person2)
                                                       (room ?room)
                                                       (in ?actor ?room)
                                                       (in ?person1 ?room)

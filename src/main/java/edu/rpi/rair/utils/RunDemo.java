@@ -1,6 +1,7 @@
 package edu.rpi.rair.utils;
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
+import com.google.common.collect.Sets;
 import com.naveensundarg.shadow.prover.Sandbox;
 import com.naveensundarg.shadow.prover.core.Problem;
 import com.naveensundarg.shadow.prover.core.Prover;
@@ -15,6 +16,7 @@ import edu.rpi.rair.utils.GoalTrackingProblem;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -32,13 +34,13 @@ public class RunDemo {
             List<Problem> problems = ProblemReader.readFrom(Sandbox.class.getResourceAsStream("firstorder-completness-tests.clj"));
 
             problems.forEach(problem -> {
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 30; i++) {
                     prover.prove(problem.getAssumptions(), problem.getGoal());
 
                 }
             });
 
-          // planningProblemWarmUp();
+          planningProblemWarmUp();
             System.out.println("\nWARM UP DONE");
         } catch (Reader.ParsingException e) {
             e.printStackTrace();
@@ -53,7 +55,7 @@ public class RunDemo {
 
             System.out.println();
 
-            List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_6.clj")));
+            List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("seriated_challenge_1.clj")));
 
 
             GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);
@@ -65,21 +67,30 @@ public class RunDemo {
             long start = System.currentTimeMillis();
 
             Goal g1 = goalTrackingProblem.getGoalNamed("G1");
+
+            /*
             Goal g2 = goalTrackingProblem.getGoalNamed("G2");
+
 
             Goal g3 = goalTrackingProblem.getGoalNamed("G3");
             Goal g4 = goalTrackingProblem.getGoalNamed("G4");
+            Goal g5 = goalTrackingProblem.getGoalNamed("G5");
 
+*/
 
             tryAndAddGoal(g1, goalTracker);
 
+    /*                    tryAndAddGoal(g2, goalTracker);
+
+
             tryAndAddGoal(g2, goalTracker);
-        //    tryAndAddGoal(g2b, goalTracker);
 
             tryAndAddGoal(g3, goalTracker);
 
             tryAndAddGoal(g4, goalTracker);
 
+            tryAndAddGoal(g5, goalTracker);
+*/
 
             long end = System.currentTimeMillis();
 
@@ -99,7 +110,7 @@ public class RunDemo {
     public static void planningProblemWarmUp() throws Reader.ParsingException {
 
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 0; i++) {
 
 
             List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_1.clj")));
@@ -146,11 +157,19 @@ public class RunDemo {
         System.out.println("========================");
         printInfo("Trying to Add Goal:", g.getName());
 
+        Set<String> oldGoals = goalTracker.getCurrentGoals().stream().map(Goal::getName).collect(Collectors.toSet());
         Optional<Plan> possibleGoalPlan = goalTracker.adoptGoal(g);
         if (possibleGoalPlan.isPresent()) {
 
             printSuccess("Successfully added:", g.getName());
             printDebug1("Current Goals:", goalTracker.getCurrentGoals().stream().map(Goal::getName).collect(Collectors.toSet()).toString());
+
+            Set<String> newGoals = goalTracker.getCurrentGoals().stream().map(Goal::getName).collect(Collectors.toSet());
+
+            if(!Sets.difference(oldGoals, newGoals).isEmpty()){
+                            printDropped("Dropped Goals:" + Sets.difference(oldGoals, newGoals));
+
+            }
             Plan plan = possibleGoalPlan.get();
             printDebug2("Plan:", plan.getActions().isEmpty() ? "No plan needed. Already satisfied." : plan.getActions().toString());
 
@@ -222,6 +241,19 @@ public class RunDemo {
         cp.setBackgroundColor(Ansi.BColor.RED);   //setting format
         cp.print(message);
         cp.clear();
+        cp.println("");
+        cp.clear();
+    }
+
+    static void printDropped(String message) {
+
+        cp.setForegroundColor(Ansi.FColor.WHITE);
+        cp.setBackgroundColor(Ansi.BColor.RED);   //setting format
+        cp.print("Dropped Goals:");
+        cp.clear();
+        cp.print(" ");
+        cp.setAttribute(Ansi.Attribute.BOLD);
+        cp.print(message);
         cp.println("");
         cp.clear();
     }

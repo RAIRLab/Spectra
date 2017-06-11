@@ -50,6 +50,19 @@ public class GoalTrackerTest {
         goalTracker.adoptGoal(goalTrackingProblem.getGoalNamed("G3"));
 
 
+        cp.setForegroundColor(Ansi.FColor.WHITE);
+        cp.setBackgroundColor(Ansi.BColor.BLUE);   //setting format
+        cp.println("Adding goal G3");
+        cp.clear();
+        goalTracker.adoptGoal(goalTrackingProblem.getGoalNamed("G4"));
+
+        cp.setForegroundColor(Ansi.FColor.WHITE);
+        cp.setBackgroundColor(Ansi.BColor.BLUE);   //setting format
+        cp.println("Adding goal G3");
+        cp.clear();
+        goalTracker.adoptGoal(goalTrackingProblem.getGoalNamed("G4"));
+
+
 
     }
 }

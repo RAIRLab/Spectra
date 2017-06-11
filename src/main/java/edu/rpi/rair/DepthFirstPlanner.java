@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class DepthFirstPlanner implements Planner {
 
 
-    private static  int MAX_DEPTH = 5;
+    private static  int MAX_DEPTH = 4;
     private static  boolean EXHAUSTIVE_TILL_MAX_DEPTH = false;
 
     public static int getMaxDepth() {

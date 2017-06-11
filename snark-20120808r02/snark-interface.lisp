@@ -16,6 +16,62 @@
   (snark:print-rows-prettily nil)
   (snark:print-rows :min 0 :max 0))
 
+
+(defun temp-sorts ()
+  (snark:declare-sort 'Room)
+  (snark:declare-sort 'Door)
+  (snark:declare-sort 'Agent) 
+  (snark:declare-sort 'Name)
+
+  
+  (snark:declare-subsort 'Robot 'Agent :subsorts-incompatible t)
+  (snark:declare-subsort 'Person 'Agent :subsorts-incompatible t)
+  (snark:declare-subsort 'Commander 'Person :subsorts-incompatible t)
+  (snark:declare-subsort 'Prisoner 'Person :subsorts-incompatible t)
+
+  (snark:declare-constant 'guard :sort 'Robot)
+  (snark:declare-constant 'guide :sort 'Robot)
+  (snark:declare-constant 'commander :sort 'Commander)
+  (snark:declare-constant 'prisoner :sort 'Prisoner)
+  
+  (snark:declare-constant 'room1 :sort 'Room)
+  (snark:declare-constant 'room2 :sort 'Room)
+  (snark:declare-constant 'hallway :sort 'Room)
+  (snark:declare-constant 'accompany :sort 'Name)
+
+  (snark:declare-function  'door 1 :sort '(Door Room))
+  
+  (snark:declare-relation 'robot 1 :sort '(Robot))
+  (snark:declare-relation 'room 1 :sort '(Room))
+  (snark:declare-relation 'person 1 :sort '(Person))
+  (snark:declare-relation 'commander 1 :sort '(Commander))
+  (snark:declare-relation 'prisoner 1 :sort '(Prisoner))
+
+  (snark:declare-relation 'in 2 :sort '(Agent Room))
+  (snark:declare-relation 'sameroom 2 :sort '(Agent Agent))
+
+  (snark:declare-relation 'interrogate 2 :sort '(Agent Agent))
+  
+  (snark:declare-relation 'can 4 :sort '(Name Agent Agent Agent))
+  
+  
+  (snark:declare-relation 'accompanies 2 :sort '(Agent Agent))
+  (snark:declare-relation 'open 1 :sort '(Door))
+
+
+  (snark:declare-variable '?room :sort 'Room)
+  (snark:declare-variable '?room1 :sort 'Room)
+  (snark:declare-variable '?room2 :sort 'Room)
+  
+  (snark:declare-variable '?person :sort 'Person)
+  (snark:declare-variable '?person1 :sort 'Person)
+  (snark:declare-variable '?person2 :sort 'Person)
+  
+  (snark:declare-variable '?actor :sort 'Agent)
+
+
+
+  )
 (defun snark-deverbose ()
   (snark:print-options-when-starting  nil)
   (snark:print-agenda-when-finished nil)
@@ -34,11 +90,12 @@
 (defun setup-snark (&key (time-limit 5) (verbose nil))
   (snark:initialize :verbose  verbose)
   (if (not verbose) (snark-deverbose) )
-  (snark:run-time-limit time-limit)
+  (temp-sorts)
+  (snark:run-time-limit 0.05)
   (snark:assert-supported t)
   (snark:assume-supported t)
   (snark:prove-supported t)
-  (snark:use-hyperresolution t)
+  (snark:use-resolution t)
   (snark:use-paramodulation t)
 
   (snark:allow-skolem-symbols-in-answers t))
