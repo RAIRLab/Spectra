@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class State {
 
     final Set<Formula> formulae;
-    private static final Prover prover = new SnarkWrapper();
+    private static final Prover prover = SnarkWrapper.getInstance();
     static Formula FALSE;
 
     static{

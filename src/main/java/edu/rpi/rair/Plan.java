@@ -2,6 +2,7 @@ package edu.rpi.rair;
 
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
+import edu.rpi.rair.utils.Visualizer;
 
 import java.util.List;
 import java.util.Set;
@@ -63,15 +64,32 @@ public class Plan {
 
     public boolean noConflicts(Set<Goal> goals){
 
-        return getConflictingGoals(goals).isEmpty();
+        Set<Goal> conflicts = getConflictingGoals(goals);
 
+        if(!conflicts.isEmpty()){
+
+            Visualizer.print(this.toString()) ;
+            Visualizer.printRed(" CONFLICTS WITH ");
+            Visualizer.print(conflicts.stream().map(x-> x.getDescription()).collect(Collectors.toSet()).toString());
+            System.out.println();
+
+        }
+
+        return conflicts.isEmpty();
+
+    }
+
+    public static Plan cleanUp(Plan plan){
+
+       List<Action> actions =  plan.getActions();
+       List<State> states = plan.getExpectedStates();
+
+       return null;
     }
 
     @Override
     public String toString() {
-        return "Plan{" +
-                "actions=" + actions +
-                '}';
+        return actions.stream().map(x-> x.toString() + "  ").reduce((x,y) -> x + y).get();
     }
 
     @Override

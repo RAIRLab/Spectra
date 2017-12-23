@@ -3,6 +3,8 @@ package edu.rpi.rair;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
 import com.naveensundarg.shadow.prover.utils.Pair;
 import com.naveensundarg.shadow.prover.utils.Sets;
+import edu.rpi.rair.utils.PlanningProblem;
+import edu.rpi.rair.utils.Visualizer;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,8 +15,8 @@ import java.util.stream.Collectors;
 public class DepthFirstPlanner implements Planner {
 
 
-    private static  int MAX_DEPTH = 4;
-    private static  boolean EXHAUSTIVE_TILL_MAX_DEPTH = false;
+    private static  int MAX_DEPTH = 5;
+    private static  boolean EXHAUSTIVE_TILL_MAX_DEPTH = true;
 
     public static int getMaxDepth() {
         return MAX_DEPTH;
@@ -59,6 +61,61 @@ public class DepthFirstPlanner implements Planner {
 
     }
 
+    @Override
+    public Optional<Set<Plan>> plan(PlanningProblem problem, Set<Formula> background, Set<Action> actions, State start, State goal) {
+
+
+        if (!EXHAUSTIVE_TILL_MAX_DEPTH) {
+
+            return planInternal(Sets.newSet(), 0, MAX_DEPTH, background, actions, start, goal);
+
+        } else {
+
+            Set<Plan> possiblePlans = Sets.newSet();
+            for (int i = 1; i <= MAX_DEPTH; i++) {
+
+                Optional<Set<Plan>> plansOpt = planInternal(Sets.newSet(), 0, i, background, actions, start, goal);
+
+                if (plansOpt.isPresent()) {
+
+                    Set<Plan> complyingPlans = plansOpt.get().stream().
+                                                 filter(plan-> plan.getActions().stream().
+                                                                map(Action::getShorthand).
+                                                                noneMatch(shortHand-> {
+
+                                                                            return problem.getAvoidIfPossible().
+                                                                                    stream().map(Object::toString).
+                                                                                    collect(Collectors.toSet()).
+                                                                                    contains(shortHand.getName());
+
+                                                                            })).
+                                                  collect(Collectors.toSet());
+
+
+                    if(!complyingPlans.isEmpty()){
+                        return Optional.of(complyingPlans);
+                    }
+                    else{
+
+                        possiblePlans.addAll(plansOpt.get());
+                    }
+
+                }
+
+            }
+//
+            if(possiblePlans.isEmpty()){
+                return Optional.empty();
+
+            } else{
+
+                return Optional.of(possiblePlans);
+            }
+
+        }
+
+
+    }
 
     private Optional<Set<Plan>> planInternal(Set<Pair<State, Action>> history, int currentDepth, int maxDepth, Set<Formula> background, Set<Action> actions, State start, State goal) {
 
@@ -83,8 +140,10 @@ public class DepthFirstPlanner implements Planner {
 
                 for (Pair<State, Action> stateActionPair : nextStateActionPairs.get()) {
 
-
+                    Visualizer.push();
                     Optional<Set<Plan>> planOpt = planInternal(history, currentDepth + 1, maxDepth, background, actions, stateActionPair.first(), goal);
+
+                    Visualizer.pop();
 
                     if (planOpt.isPresent()) {
 
@@ -99,6 +158,8 @@ public class DepthFirstPlanner implements Planner {
                                 collect(Collectors.toSet());
 
                         allPlans.addAll(augmentedPlans);
+
+                  //      return Optional.of(allPlans);
 
                         //TODO: store different plans and return the best plan.
                     }

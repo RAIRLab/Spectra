@@ -10,6 +10,8 @@ public class Goal {
     private final State goalState;
     private final double priority;
     private final String name;
+    private final String description;
+
 
     private static final AtomicInteger nameCounter;
     static {
@@ -19,12 +21,22 @@ public class Goal {
         this.goalState = goalState;
         this.priority = priority;
         this.name = "G"  + nameCounter.incrementAndGet();
+        this.description = goalState.toString();
+
     }
 
     private Goal(State goalState, double priority, String name) {
         this.goalState = goalState;
         this.priority = priority;
         this.name = name;
+        this.description = goalState.toString();
+    }
+
+    private Goal(State goalState, double priority, String name, String description) {
+        this.goalState = goalState;
+        this.priority = priority;
+        this.name = name;
+        this.description = description;
     }
     public static Goal makeGoal(State goalState, double priority){
 
@@ -32,9 +44,9 @@ public class Goal {
 
     }
 
-    public static Goal makeGoal(State goalState, double priority, String name){
+    public static Goal makeGoal(State goalState, double priority, String name, String description){
 
-        return new Goal(goalState, priority, name);
+        return new Goal(goalState, priority, name, description);
 
     }
 
@@ -51,13 +63,12 @@ public class Goal {
         return name;
     }
 
+    public String getDescription() {
+        return description;
+    }
     @Override
     public String toString() {
-        return "Goal{" +
-                "goalState=" + goalState +
-                ", priority=" + priority +
-                ", name='" + name + '\'' +
-                '}';
+        return  "(" + name + ": " + description + ": " + priority+ ")";
     }
 
     @Override

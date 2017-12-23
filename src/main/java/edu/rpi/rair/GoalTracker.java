@@ -4,6 +4,7 @@ import com.naveensundarg.shadow.prover.representations.formula.Formula;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
 import com.naveensundarg.shadow.prover.utils.Pair;
 import com.naveensundarg.shadow.prover.utils.Sets;
+import edu.rpi.rair.utils.PlanningProblem;
 
 import java.util.Comparator;
 import java.util.List;
@@ -24,13 +25,15 @@ public class GoalTracker {
     private final Set<Goal> currentGoals;
     private final Planner planner;
     private final Set<Action> actions;
-
-    public GoalTracker(Set<Formula> background, State startState, Set<Action> actions) {
+    private final PlanningProblem problem;
+    public GoalTracker(PlanningProblem problem, Set<Formula> background, State startState, Set<Action> actions) {
         this.background = background;
         this.currentState = startState;
         this.currentGoals = CollectionUtils.newEmptySet();
         this.planner = new DepthFirstPlanner();
         this.actions = actions;
+
+        this.problem = problem;
 
         Operations.reset();
     }
@@ -68,7 +71,7 @@ public class GoalTracker {
 
 
 
-        Optional<Set<Plan>> possiblePlans = planner.plan(background, actions, currentState, goal.getGoalState());
+        Optional<Set<Plan>> possiblePlans = planner.plan(problem, background, actions, currentState, goal.getGoalState());
 
         if (!possiblePlans.isPresent()) {
 
@@ -149,6 +152,18 @@ public class GoalTracker {
         }
 
 
+    }
+
+    public Set<Formula> getBackground() {
+        return background;
+    }
+
+    public State getCurrentState() {
+        return currentState;
+    }
+
+    public PlanningProblem getProblem() {
+        return problem;
     }
 
     public Set<Goal> getCurrentGoals() {

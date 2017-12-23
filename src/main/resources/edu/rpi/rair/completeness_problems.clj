@@ -2,15 +2,12 @@
  :background     [p]
  :start          [q]
  :goal           [r]
- :actions
-                 [(define-action a1 ()
-                                 {:preconditions [(or q r)]
-                                  :additions     [r]
-                                  :deletions     [q]})]
+ :actions        [(define-action a1 ()
+                   {:preconditions [(or q r)]
+                    :additions     [r]
+                    :deletions     [q]})]
 
- :expected-plans ([a1])
- }
-
+ :expected-plans ([a1])}
 
 
 {:name           "simple killing"
@@ -18,14 +15,12 @@
  :start          [(forall ?x (alive ?x))]
  :goal           [(forall ?x (dead ?x))]
  :actions
-                 [(define-action kill ()
-                                 {:preconditions [(alive ?x)]
-                                  :additions     [(dead ?x)]
-                                  :deletions     [(alive ?x)]})]
+ [(define-action kill ()
+    {:preconditions [(alive ?x)]
+     :additions     [(dead ?x)]
+     :deletions     [(alive ?x)]})]
 
- :expected-plans ([kill])
-
- }
+ :expected-plans ([kill])}
 
 
 {:name           "thirsty"
@@ -33,18 +28,16 @@
  :start          [thirsty]
  :goal           [(not thirsty)]
  :actions
-                 [(define-action drink ()
-                                 {:preconditions [thirsty]
-                                  :additions     [(not thirsty)]
-                                  :deletions     [thirsty]})
-                  (define-action eat ()
-                                 {:preconditions [hungry]
-                                  :additions     [(not hungry)]
-                                  :deletions     [hungry]})]
+ [(define-action drink ()
+    {:preconditions [thirsty]
+     :additions     [(not thirsty)]
+     :deletions     [thirsty]})
+  (define-action eat ()
+    {:preconditions [hungry]
+     :additions     [(not hungry)]
+     :deletions     [hungry]})]
 
- :expected-plans ([drink])
-
- }
+ :expected-plans ([drink])}
 
 
 {:name           "hungry"
@@ -53,18 +46,17 @@
  :goal           [(not hungry)]
  :actions
 
-                 [(define-action drink ()
-                                 {:preconditions [thirsty]
-                                  :additions     [(not thirsty)]
-                                  :deletions     [thirsty]})
+ [(define-action drink ()
+    {:preconditions [thirsty]
+     :additions     [(not thirsty)]
+     :deletions     [thirsty]})
 
-                  (define-action eat ()
-                                 {:preconditions [hungry]
-                                  :additions     [(not hungry)]
-                                  :deletions     [hungry]})]
+  (define-action eat ()
+    {:preconditions [hungry]
+     :additions     [(not hungry)]
+     :deletions     [hungry]})]
 
- :expected-plans ([eat])
- }
+ :expected-plans ([eat])}
 
 
 {:name           "hungry and thirsty"
@@ -72,19 +64,18 @@
  :start          [hungry thirsty]
  :goal           [(not (or hungry thirsty))]
  :actions
-                 [(define-action drink ()
-                                 {:preconditions [thirsty]
-                                  :additions     [(not thirsty)]
-                                  :deletions     [thirsty]})
+ [(define-action drink ()
+    {:preconditions [thirsty]
+     :additions     [(not thirsty)]
+     :deletions     [thirsty]})
 
-                  (define-action eat ()
-                                 {:preconditions [hungry]
-                                  :additions     [(not hungry)]
-                                  :deletions     [hungry]})]
+  (define-action eat ()
+    {:preconditions [hungry]
+     :additions     [(not hungry)]
+     :deletions     [hungry]})]
 
  :expected-plans ([eat drink]
-                   [drink eat])
- }
+                   [drink eat])}
 
 {:name           "hungry and thirsty"
  :background     []
@@ -92,94 +83,141 @@
  :goal           [work-finished]
  :actions
 
-                 [(define-action drink ()
-                                 {:preconditions [thirsty]
-                                  :additions     [(not thirsty)]
-                                  :deletions     [thirsty]})
+ [(define-action drink ()
+    {:preconditions [thirsty]
+     :additions     [(not thirsty)]
+     :deletions     [thirsty]})
 
-                  (define-action eat ()
-                                 {:preconditions [hungry]
-                                  :additions     [(not hungry)]
-                                  :deletions     [hungry]})
+  (define-action eat ()
+    {:preconditions [hungry]
+     :additions     [(not hungry)]
+     :deletions     [hungry]})
 
-                  (define-action work ()
-                                 {:preconditions [(and (not hungry) (not thirsty))]
-                                  :additions     [work-finished]
-                                  :deletions     [work-unfinished]})]
+  (define-action work ()
+    {:preconditions [(and (not hungry) (not thirsty))]
+     :additions     [work-finished]
+     :deletions     [work-unfinished]})]
 
  :expected-plans ([eat drink work]
                    [drink eat work])}
 
-
-
-
-{:name           "demo 1"
- :background     [
-                  (not (= room1 room2))
-                  (not (= prisoner commander))
-                  (not (= self prisoner))
-                  (not (= self commander))
-                  (person prisoner)
-                  (person commander)
-                  ]
- :start          [(in self room1)
-                  (in commander room2)
-                  (in prisoner room1)
-                  (open (door room2))
-                  (not (open (door room1)))]
-
- :goal           [(interrogates commander prisoner)]
-
+{:name           "Heinz Dilemma"
+ :background     [(cures radium-drug-x cancerx)]
+ :start          [(sick (wife heinz) cancerx)
+                  (= 5000 (cost radium-drug-x))
+                  (not (can-spend 5000))
+                  (not (possess radium-drug-x))]
+ :goal           [(healthy (wife heinz))]
  :actions
-                 [(define-action open-door [?room]
-                                 {:preconditions [(not (open (door ?room)))]
-                                  :additions     [(open (door ?room))]
-                                  :deletions     [(not (open (door ?room)))]})
+
+ [(define-action administer-medicine [?medicine ?condition ?person]
+    {:preconditions [(sick ?person ?condition)
+                     (cures ?medicine ?condition)
+                     (possess ?medicine)]
+     :additions     [(healthy ?person)]
+     :deletions     [(sick ?person ?condition)]})
+
+  (define-action buy-medicine [?medicine]
+    {:preconditions [(can-spend (cost ?medicine))]
+     :additions     [(possess ?medicine)]
+     :deletions     [(not (possess ?medicine))]})
 
 
+  (define-action steal-medicine [?medicine]
+    {:preconditions [(not (possess ?medicine))]
+     :additions     [(possess ?medicine)]
+     :deletions     [(not (possess ?medicine))]})
 
-                  (define-action accompany [?person ?room1 ?room2]
-                                 {:preconditions [(not (= ?room1 ?room2))
-                                                  (in ?person ?room1)
-                                                  (in self ?room1)
-                                                  (open (door ?room1))
-                                                  (open (door ?room2))]
 
-                                  :additions     [(in ?person ?room2)
-                                                  (in self ?room2)]
+  (define-action finance [?amount]
+    {:preconditions [(not (can-spend ?amount))]
+     :additions     [(can-spend ?amount)]
+     :deletions     [(not (can-spend ?amount))]})]
 
-                                  :deletions     [(in ?person ?room1)
-                                                  (in self ?room1)]})
+ :expected-plans ([buy-medicine administer-medicine])}
 
-                  (define-action move [?person ?room2 ?room1]
-                                 {:preconditions [(not (= ?room1 ?room2))
-                                                  (in ?person ?room2)
-                                                  (open (door ?room1))
-                                                  (open (door ?room2))]
 
-                                  :additions     [(in ?person ?room1)]
+{:name           "belief intro"
+ :background     [(Proposition god-exists)
+                  (forall [?p] (if (Proposition ?p) (or (True ?p) (False ?p))))
+                  (forall [?p] (iff (True ?p) (not (False ?p))))
+                  (forall [?p] (iff (True ?p) (HasSupport ?p)))
+                  (False god-exists)]
+ :start          []
+ :goal           [(Declaration god-exists)]
+ :actions
+ [(define-action declare-P [?p]
+    {:preconditions [(Belief ?p)]
+     :additions     [(Declaration ?p)]
+     :deletions     [(Private ?p)]})
 
-                                  :deletions     [(in ?person ?room2)]})
+  (define-action believe-with-support [?p]
+    {:preconditions [(Proposition ?p)
+                     (HasSupport ?p)]
+     :additions     [(Belief ?p)]
+     :deletions     []})
 
-                  (define-action get-interrogated [?room]
-                                 {:preconditions [(in commander ?room)
-                                                  (in prisoner ?room)]
+  (define-action believe-without-support [?p]
+    {:preconditions [(Proposition ?p)]
+     :additions     [(Belief ?p)]
+     :deletions     []})]
 
-                                  :additions     [(interrogates commander prisoner)]
+ :expected-plans ([believe-P declare-P])}
 
-                                  :deletions     []})
+{:name           "reasoning 1"
+ :background     []
+ :start          [(! p) (!  q)]
+ :goal           [(! (and p q))]
+
+ :actions        [(define-action and-intro [?p ?q]
+                    {:preconditions [(! ?p) (!  ?q)]
+                     :additions     [(! (and ?p ?q))]
+                     :deletions     []})
+                  (define-action cond-elim [?p ?q]
+                    {:preconditions [(! (if ?p ?q)) (!  ?p)]
+                     :additions     [(! ?q)]
+                     :deletions     []})]
+
+ :expected-plans ([and-intro])}
+
+
+{:name           "reasoning 2"
+ :background     []
+ :start          [(! p) (!  q)
+                  (! (if (and p q) r))]
+ :goal           [(! r)]
+
+ :actions        [(define-action and-intro [?p ?q]
+                    {:preconditions [(! ?p) (!  ?q)]
+                     :additions     [(! (and ?p ?q))]
+                     :deletions     []})
+                  (define-action cond-elim [?p ?q]
+                    {:preconditions [(! (if ?p ?q)) (!  ?p)]
+                     :additions     [(! ?q)]
+                     :deletions     []})]
+
+ :expected-plans ([and-intro])}
+
+{:name           "reasoning 3"
+ :background     []
+ :start          [(! A) (!  B)
+                  (Prop S)
+                  (! (if (and A B) C))
                   ]
+ :goal           [(! (if S C) )]
 
- :expected-plans ([(open-door room1)
-                    (move commander room2 room1)
-                    (get-interrogated room1)]
+ :actions        [(define-action and-intro [?p ?q]
+                    {:preconditions [(! ?p) (!  ?q)]
+                     :additions     [(! (and ?p ?q))]
+                     :deletions     []})
+                  (define-action cond-elim [?p ?q]
+                    {:preconditions [(! (if ?p ?q)) (! ?p)]
+                     :additions     [(! ?q)]
+                     :deletions     []})
 
-                   [(open-door room1)
-                    (move prisoner room1 room2)
-                    (get-interrogated room2)]
+                  (define-action cond-intro [?p ?q]
+                    {:preconditions [ (Prop ?p) (! ?q)]
+                     :additions     [(! (if ?p ?q))]
+                     :deletions     []})]
 
-                   [(open-door room1)
-                    (accompany prisoner room1 room2)
-                    (get-interrogated room2)])}
-
-
+ :expected-plans ([and-intro])}

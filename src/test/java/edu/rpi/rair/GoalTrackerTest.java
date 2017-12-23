@@ -17,12 +17,12 @@ public class GoalTrackerTest {
 
     public static void main(String[] args) throws Reader.ParsingException {
 
-        List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_1.clj")));
+        List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_6.clj")));
 
 
         GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);
 
-        GoalTracker goalTracker = new GoalTracker(goalTrackingProblem.getPlanningProblem().getBackground(),
+        GoalTracker goalTracker = new GoalTracker(goalTrackingProblem.getPlanningProblem(), goalTrackingProblem.getPlanningProblem().getBackground(),
                 goalTrackingProblem.getPlanningProblem().getStart(),
                 goalTrackingProblem.getPlanningProblem().getActions());
 

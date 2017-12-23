@@ -33,7 +33,9 @@ public class DepthFirstPlannerTest {
 
         Planner depthFirstPlanner = new DepthFirstPlanner();
 
-        PlanningProblem planningProblem = planningProblemList.get(5);
+        PlanningProblem planningProblem = planningProblemList.stream().filter(problem -> problem.getName().equals("reasoning 3")).findFirst().get();
+
+
         depthFirstPlanner.plan(planningProblem.getBackground(), planningProblem.getActions(), planningProblem.getStart(), planningProblem.getGoal()).get().forEach(System.out::println);
     }
 

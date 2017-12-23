@@ -3,7 +3,6 @@ package edu.rpi.rair;
 import com.naveensundarg.shadow.prover.core.Prover;
 import com.naveensundarg.shadow.prover.core.SnarkWrapper;
 import com.naveensundarg.shadow.prover.core.proof.Justification;
-import com.naveensundarg.shadow.prover.core.proof.TrivialJustification;
 import com.naveensundarg.shadow.prover.representations.formula.BiConditional;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
 import com.naveensundarg.shadow.prover.representations.formula.Predicate;
@@ -12,7 +11,9 @@ import com.naveensundarg.shadow.prover.representations.value.Variable;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
 import com.naveensundarg.shadow.prover.utils.ImmutablePair;
 import com.naveensundarg.shadow.prover.utils.Pair;
+
 import com.naveensundarg.shadow.prover.utils.Sets;
+import edu.rpi.rair.utils.Visualizer;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.List;
@@ -30,7 +31,7 @@ import static edu.rpi.rair.State.FALSE;
 public class Operations {
 
     private static boolean DEEP_EQUIVALENCE = false;
-    private static boolean THROW_AWAY_EMPTY_BINDINGS = false;
+    private static boolean THROW_AWAY_EMPTY_BINDINGS = true;
     private static Prover prover;
 
 
@@ -46,7 +47,8 @@ public class Operations {
         applyCache.clear();
     }
     static {
-        prover = new SnarkWrapper();
+        prover = SnarkWrapper.getInstance();
+
 
     }
 
@@ -110,7 +112,7 @@ public class Operations {
 
                  if(room1.equals(room2)){
 
-                     return Optional.of(Justification.trivial(goal));
+                     return Optional.of(Justification.trivial(assumptions, goal));
                  }
 
              }
@@ -172,8 +174,15 @@ public class Operations {
 
     public static synchronized Optional<Set<Map<Variable, Value>>> proveAndGetMultipleBindings(Set<Formula> givens, Formula goal, List<Variable> variables) {
 
-        return prover.proveAndGetMultipleBindings(givens, goal, variables);
+        Optional<org.apache.commons.lang3.tuple.Pair<Justification, Set<Map<Variable, Value>>>> ans  = prover.proveAndGetMultipleBindings(givens, goal, variables);
 
+        if(ans.isPresent()){
+
+           return Optional.of(ans.get().getRight());
+
+        }else {
+            return Optional.empty();
+        }
       /*  Future<Optional<Set<Map<Variable, Value>>>> future = new FutureTask<>(()-> prover.proveAndGetMultipleBindings(givens, goal, variables));
 
         Optional<Set<Map<Variable, Value>>> answer;
@@ -192,9 +201,14 @@ public class Operations {
 
     public static Optional<Set<Pair<State, Action>>> apply(Set<Formula> background, Action action, State state) {
 
+
         if(applyCache.containsKey(Triple.of(background, action, state))){
 
-            return applyCache.get(Triple.of(background, action, state));
+            Optional<Set<Pair<State, Action>>>  ans  = applyCache.get(Triple.of(background, action, state));
+            if(ans.isPresent()){
+                return applyCache.get(Triple.of(background, action, state));
+
+            }
         }
 
         Set<Formula> givens = Sets.union(background, state.getFormulae());
@@ -206,10 +220,13 @@ public class Operations {
         if (!bindingsOpt.isPresent()) {
 
 
+
             applyCache.put(Triple.of(background, action ,state), Optional.empty());
             return Optional.empty();
 
         }
+
+        Visualizer.nested(action.getName());
 
         Set<Pair<State, Action>> nexts = Sets.newSet();
         for (Map<Variable, Value> binding : bindingsOpt.get()) {
@@ -222,7 +239,7 @@ public class Operations {
             Set<Formula> instantiatedDeletions = action.instantiateDeletions(binding);
 
             Set<Formula> formulaeToRemove = state.getFormulae().stream().
-                    filter(f -> instantiatedDeletions.stream().anyMatch(d -> equivalent(background, f, d))).collect(Collectors.toSet());
+                    filter(f -> instantiatedDeletions.stream().anyMatch(d -> equivalent(Sets.union(background, state.getFormulae()), f, d))).collect(Collectors.toSet());
 
             Set<Formula> newFormulae = Sets.union(background, state.getFormulae());
 
@@ -238,6 +255,7 @@ public class Operations {
 
 
         }
+
 
         if (nexts.isEmpty()) {
 
@@ -261,6 +279,10 @@ public class Operations {
 
 
         }
+
+        nexts = nexts.stream().filter(n-> !n.first().getFormulae().equals(state.getFormulae())).collect(Collectors.toSet());;
+
+
 
         applyCache.put(Triple.of(background, action ,state), Optional.of(nexts));
 

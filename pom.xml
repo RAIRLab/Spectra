@@ -14,7 +14,7 @@
         <dependency>
             <groupId>logic</groupId>
             <artifactId>prover</artifactId>
-            <version>0.09</version>
+            <version>0.84</version>
         </dependency>
 
         <dependency>

@@ -2,10 +2,12 @@ package edu.rpi.rair.utils;
 
 import clojure.lang.Obj;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
+import com.naveensundarg.shadow.prover.representations.value.Compound;
 import com.naveensundarg.shadow.prover.representations.value.Value;
 import com.naveensundarg.shadow.prover.representations.value.Variable;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
 import com.naveensundarg.shadow.prover.utils.Reader;
+import com.naveensundarg.shadow.prover.utils.Sets;
 import edu.rpi.rair.Action;
 import edu.rpi.rair.State;
 import us.bpsm.edn.Keyword;
@@ -17,6 +19,7 @@ import us.bpsm.edn.parser.Token;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,11 +37,14 @@ public class PlanningProblem {
     private Optional<Set<List<Action>>> expectedActionSequencesOpt;
     private Map<String, Action> actionMap;
 
+    private Set<Value> avoidIfPossible;
+
     private static final Keyword BACKGROUND = Keyword.newKeyword("background");
     private static final Keyword START = Keyword.newKeyword("start");
     private static final Keyword GOAL = Keyword.newKeyword("goal");
     private static final Keyword NAME = Keyword.newKeyword("name");
     private static final Keyword ACTION = Keyword.newKeyword("actions");
+    private static final Keyword AVOID_IF_POSSIBLE = Keyword.newKeyword("avoid-if-possible");
 
     private static final Keyword PRECONDITIONS = Keyword.newKeyword("preconditions");
     private static final Keyword ADDITIONS = Keyword.newKeyword("additions");
@@ -48,7 +54,7 @@ public class PlanningProblem {
 
     private static final Keyword EXPECTED_PLANS = Keyword.newKeyword("expected-plans");
 
-    public PlanningProblem(String name, Set<Formula> background, State start, State goal, Set<Action> actions) {
+    private PlanningProblem(String name, Set<Formula> background, State start, State goal, Set<Action> actions, Set<Value> avoidIfPossible) {
 
         this.background = background;
         this.start = start;
@@ -56,10 +62,13 @@ public class PlanningProblem {
         this.goal = goal;
         this.name = name;
         this.actionMap = CollectionUtils.newMap();
+        this.avoidIfPossible = avoidIfPossible;
+
         this.expectedActionSequencesOpt = Optional.empty();
+
     }
 
-    public PlanningProblem(String name, Set<Formula> background, State start, State goal, Set<Action> actions, Set<List<Action>> expectedActionSequences) {
+    private PlanningProblem(String name, Set<Formula> background, State start, State goal, Set<Action> actions, Set<Value> avoidIfPossible,  Set<List<Action>>expectedActionSequences) {
 
         this.background = background;
         this.start = start;
@@ -67,6 +76,8 @@ public class PlanningProblem {
         this.goal = goal;
         this.name = name;
         this.actionMap = CollectionUtils.newMap();
+        this.avoidIfPossible = avoidIfPossible;
+
         this.expectedActionSequencesOpt = Optional.of(expectedActionSequences);
     }
 
@@ -100,6 +111,7 @@ public class PlanningProblem {
 
 
         Set<Formula> goal = readFrom((List<?>) planningProblemSpec.get(GOAL));
+        Set<Value> avoidIfPossible = readValuesFrom((List<?>) planningProblemSpec.get(AVOID_IF_POSSIBLE));
 
         List<?> actionDefinitions = (List<?>) planningProblemSpec.get(ACTION);
 
@@ -110,6 +122,7 @@ public class PlanningProblem {
         actions.stream().forEach(action->{
             actionMap.put(action.getName(), action);
         });
+
         if(planningProblemSpec.containsKey(EXPECTED_PLANS)){
             List<?> plans = (List<?>) planningProblemSpec.get(EXPECTED_PLANS);
 
@@ -135,15 +148,32 @@ public class PlanningProblem {
 
 
              return new PlanningProblem(name, background, State.initializeWith(start),
-                State.initializeWith(goal), actions, expectedActions);
+                State.initializeWith(goal), actions, avoidIfPossible, expectedActions);
         } else {
 
              return new PlanningProblem(name, background, State.initializeWith(start),
-                State.initializeWith(goal), actions);
+                State.initializeWith(goal),actions, avoidIfPossible);
         }
     }
 
 
+    public  static Action readInstantiatedAction(Set<Action> actions, String instantiatedActionSpecString) throws Reader.ParsingException {
+
+
+        Parseable parseable = Parsers.newParseable(new StringReader(instantiatedActionSpecString));
+        Parser parser = Parsers.newParser(Parsers.defaultConfiguration());
+
+        Object instantiatedActionSpec = parser.nextValue(parseable);
+
+        Map<String, Action> actionMap = CollectionUtils.newMap();
+
+        actions.stream().forEach(action->{
+            actionMap.put(action.getName(), action);
+        });
+
+        return readInstantiatedAction(actionMap, instantiatedActionSpec);
+
+    }
     private  static Action readInstantiatedAction(Map<String, Action> actionMap, Object instantiatedActionSpec) throws Reader.ParsingException {
 
         if(instantiatedActionSpec instanceof List<?>){
@@ -229,6 +259,10 @@ public class PlanningProblem {
 
     public static Set<Formula> readFrom(List<?> objects) throws Reader.ParsingException {
 
+        if(objects==null){
+
+            return Sets.newSet();
+        }
         Set<Formula> formulae = objects.stream().map(x -> {
             try {
                 return Reader.readFormula(x);
@@ -249,6 +283,31 @@ public class PlanningProblem {
 
     }
 
+    public static Set<Value> readValuesFrom(List<?> objects) throws Reader.ParsingException {
+
+        if(objects==null){
+
+            return Sets.newSet();
+        }
+        Set<Value> values = objects.stream().map(x -> {
+            try {
+                 return Reader.readLogicValue(x);
+            } catch (Reader.ParsingException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).collect(Collectors.toSet());
+
+
+        if (values.stream().anyMatch(Objects::isNull)) {
+
+            throw new Reader.ParsingException("Couldn't read formulae: " + objects);
+        }
+
+        return values;
+
+
+    }
     public Set<Formula> getBackground() {
         return background;
     }
@@ -275,6 +334,10 @@ public class PlanningProblem {
 
     public Map<String, Action> getActionMap() {
         return actionMap;
+    }
+
+    public Set<Value> getAvoidIfPossible() {
+        return avoidIfPossible;
     }
 
     @Override

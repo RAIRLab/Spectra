@@ -21,16 +21,18 @@
                       (< (size a) (size b))
                       (< (size b) (size c))
                       (< (size c) (size d))
-                      (< (size d) (size e))]
+                      (< (size d) (size e))
+                      (< (size e) (size f))
+                      (< (size f) (size g))
+                      (< (size g) (size h))]
 
 
          :start      [(In a b)
                       (In b d)
-                      (In d e)
-                      (Empty c)]
+                       (Empty c)]
 
 
-         :goal       []
+         :goal       [ ]
 
          :actions  [(define-action placeInside [?x ?y]
                                      {:preconditions [(< (size ?x) (size ?y))
@@ -41,20 +43,15 @@
                       (define-action removeFrom [?x ?y]
                                      {:preconditions [(In ?x ?y)]
                                       :additions     [(Empty ?y)]
-                                      :deletions     [(In ?x ?y)]} )]
-
-
-
-         }
+                                      :deletions     [(In ?x ?y)]})]}
 
  :goals {G1 {:priority 1.0
              :state    [(In a b)
                         (In b c)
-                        (In c d)
-                        (In d e)]}}
+                        (In c d)]}}
 
 
-
+;;(removeFrom  b d)  (placeInside  b c)  (placeInside  c d)
 
 
  }

@@ -27,6 +27,7 @@ public class GoalTrackingProblem {
 
     private static final Keyword DEFINITIONS = Keyword.newKeyword("definitions");
     private static final Keyword GOALS = Keyword.newKeyword("goals");
+    private static final Keyword DESCRIPTION = Keyword.newKeyword("description");
 
     private static final Keyword PRIORITY = Keyword.newKeyword("priority");
     private static final Keyword STATE = Keyword.newKeyword("state");
@@ -69,7 +70,8 @@ public class GoalTrackingProblem {
                 double priority = ((Double) goalSpec.get(PRIORITY));
                 Set<Formula> stateFormulae = PlanningProblem.readFrom((List<?>) goalSpec.get(STATE));
 
-                goals.add(Goal.makeGoal(State.initializeWith(stateFormulae), priority, name));
+                String description = goalSpec.get(DESCRIPTION)!=null? goalSpec.get(DESCRIPTION).toString(): stateFormulae.toString();
+                goals.add(Goal.makeGoal(State.initializeWith(stateFormulae), priority, name,  description));
 
             }
 

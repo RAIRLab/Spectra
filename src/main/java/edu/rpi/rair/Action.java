@@ -1,13 +1,13 @@
 package edu.rpi.rair;
 
+import com.naveensundarg.shadow.prover.core.Logic;
 import com.naveensundarg.shadow.prover.representations.formula.And;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
 import com.naveensundarg.shadow.prover.representations.value.Compound;
 import com.naveensundarg.shadow.prover.representations.value.Value;
 import com.naveensundarg.shadow.prover.representations.value.Variable;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
-import com.naveensundarg.shadow.prover.utils.Logic;
-import com.naveensundarg.shadow.prover.utils.Sets;
+ import com.naveensundarg.shadow.prover.utils.Sets;
 
 import java.util.List;
 import java.util.Map;
@@ -159,6 +159,11 @@ public class Action {
 
         return trivial;
     }
+
+    public Compound getShorthand() {
+        return shorthand;
+    }
+
     @Override
     public String toString() {
         return shorthand.getArguments().length == 0?  name: shorthand.toString();
