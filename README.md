@@ -4,12 +4,11 @@ Spectra is a general purpose planning system. It extends STRIPS-style planning b
 
 [Overview Presentation (pdf)](https://drive.google.com/open?id=1RHulFDgASACBkjvl-8ZEidj50NbGmKPu)
 
-* Existing Planners are propositional 
-* Drawbacks: 
+ * Drawbacks of propositional planning (current planning systems): 
  * **Expressivity**: Cannot express arbitrary constraints.  *“At every step make sure that no two blocks on the table have same color”*
    * **Domain Size**: Scaling to large domains of arbitrary sizes poses difficulty. 
 
-# Architecture #
+# Spectra's Architecture #
 
  
 ![spectra-arch.png](https://bitbucket.org/repo/Mjq4bX/images/2495888298-spectra-arch.png)
