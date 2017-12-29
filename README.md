@@ -36,6 +36,7 @@ Two approaches:
            (< (size ?c) (size ?d))
            (< (size ?b) (size ?c))]
    :actions [(removeFrom  ?b ?d) (placeInside  ?b ?c) (placeInside  ?c ?d)]})
+```
+
 Roughly, a method has conditions that the goal and background + start state should satisfy. If the conditions are satisfied, a plan template is generated (note the variables).
 The planner then verifies if the plan template works, if so it outputs the plan. 
-```
