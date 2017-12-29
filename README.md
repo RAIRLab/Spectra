@@ -12,7 +12,7 @@ Spectra is a general purpose planning system. It extends STRIPS-style planning b
 # Architecture #
 
  
-![spectra-arch.png](https://bitbucket.org/repo/Mjq4bX/images/2495888298-spectra-arch.png){:height="36px" width="36px"}.
+![spectra-arch.png](https://bitbucket.org/repo/Mjq4bX/images/2495888298-spectra-arch.png)
 
 # Example #
 
