@@ -2,7 +2,7 @@
 
 Spectra is a general purpose planning system. It extends STRIPS-style planning by allowing arbitray first-order formulae for state descriptions and background knowledge rather than just predicates. This allows, for instance, handling domains with infinite or unbounded objects elegantly (among other things). 
 
-
+[Overview Presentation](https://drive.google.com/open?id=1RHulFDgASACBkjvl-8ZEidj50NbGmKPu)
 
 * Existing Planners are propositional 
 * Drawbacks: 
