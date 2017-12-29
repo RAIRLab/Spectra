@@ -8,18 +8,18 @@ Spectra is a general purpose planning system. It extends STRIPS-style planning b
  * **Expressivity**: Cannot express arbitrary constraints.  *“At every step make sure that no two blocks on the table have same color”*
    * **Domain Size**: Scaling to large domains of arbitrary sizes poses difficulty. 
 
-# Spectra's Architecture #
+## Spectra's Architecture ##
 
  
 ![spectra-arch.png](https://bitbucket.org/repo/Mjq4bX/images/2495888298-spectra-arch.png)
 
-# Example #
+## Example Input File ##
 
 ![examples.png](https://bitbucket.org/repo/Mjq4bX/images/3136509575-examples.png)
 
 
  
-# Scaling Up #
+## Scaling Up ##
 
 Two approaches: 
 
@@ -43,5 +43,6 @@ Two approaches:
 Roughly, a method has conditions that the goal and background + start state should satisfy. If the conditions are satisfied, a plan template is generated (note the variables).
 The planner then verifies if the plan template works, if so it outputs the plan. 
 
+## Spectra's on a Seriated Cup Challenge ##
 
 ![download-3.gif](https://bitbucket.org/repo/Mjq4bX/images/794008054-download-3.gif)
