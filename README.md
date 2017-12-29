@@ -17,6 +17,10 @@ Spectra is a general purpose planning system. It extends STRIPS-style planning b
 # Example #
 
 ![examples.png](https://bitbucket.org/repo/Mjq4bX/images/3136509575-examples.png)
+
+
+![download-2.gif](https://bitbucket.org/repo/Mjq4bX/images/3514532887-download-2.gif)
+
 # Scaling Up #
 
 Two approaches: 
@@ -40,3 +44,6 @@ Two approaches:
 
 Roughly, a method has conditions that the goal and background + start state should satisfy. If the conditions are satisfied, a plan template is generated (note the variables).
 The planner then verifies if the plan template works, if so it outputs the plan. 
+
+
+
