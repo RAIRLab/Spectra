@@ -105,6 +105,18 @@ public class Action {
         return precondition;
     }
 
+    public Set<Formula> getPreconditions() {
+        return preconditions;
+    }
+
+    public Set<Formula> getAdditions() {
+        return additions;
+    }
+
+    public Set<Formula> getDeletions() {
+        return deletions;
+    }
+
     public List<Variable> openVars() {
 
         return freeVariables;

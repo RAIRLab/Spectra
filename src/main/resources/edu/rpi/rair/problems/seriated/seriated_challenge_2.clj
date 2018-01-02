@@ -54,14 +54,17 @@
          }
 
  :goals {G1 {:priority 1.0
+
+
              :state    [(In a b)
                         (In b c)
                         (In c d)
                         (In d e)
                         (In e f)
                         (In f g)
-                        (In g h)
-]}}
+                        (In g h)]
+
+             }}
 
 
 ;;(removeFrom  b d)  (placeInside  b c)  (placeInside  c d)

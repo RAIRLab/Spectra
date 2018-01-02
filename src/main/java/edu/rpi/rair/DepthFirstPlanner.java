@@ -1,12 +1,16 @@
 package edu.rpi.rair;
 
+import com.naveensundarg.shadow.prover.core.proof.Justification;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
+import com.naveensundarg.shadow.prover.utils.CollectionUtils;
 import com.naveensundarg.shadow.prover.utils.Pair;
 import com.naveensundarg.shadow.prover.utils.Sets;
+import edu.rpi.rair.utils.Commons;
 import edu.rpi.rair.utils.PlanningProblem;
 import edu.rpi.rair.utils.Visualizer;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -17,6 +21,8 @@ public class DepthFirstPlanner implements Planner {
 
     private static  int MAX_DEPTH = 5;
     private static  boolean EXHAUSTIVE_TILL_MAX_DEPTH = true;
+
+    private static boolean USE_METHODS  = true;
 
     public static int getMaxDepth() {
         return MAX_DEPTH;
@@ -63,6 +69,15 @@ public class DepthFirstPlanner implements Planner {
 
     @Override
     public Optional<Set<Plan>> plan(PlanningProblem problem, Set<Formula> background, Set<Action> actions, State start, State goal) {
+
+        if(USE_METHODS){
+
+            Optional<Set<Plan>> optionalPlansFromMethods = plan(problem, background, actions, start, goal, problem.getPlanMethods());
+
+            if(optionalPlansFromMethods.isPresent()){
+                return optionalPlansFromMethods;
+            }
+        }
 
 
         if (!EXHAUSTIVE_TILL_MAX_DEPTH) {
@@ -116,6 +131,79 @@ public class DepthFirstPlanner implements Planner {
 
 
     }
+
+
+     public Optional<Set<Plan>> plan(PlanningProblem problem, Set<Formula> background, Set<Action> actions, State start, State goal, List<PlanMethod> planMethods){
+
+        Set<Plan> plans = Sets.newSet();
+
+        Function<PlanSketch, Optional<Plan>> verifier = (planSketch) -> verify(background, start, goal, planSketch);
+
+        for (PlanMethod planMethod: planMethods){
+
+            Optional<List<PlanSketch>> optionalPlanSketches = planMethod.apply(background, start.getFormulae(), goal.getFormulae(), problem.getActions());
+
+            optionalPlanSketches.ifPresent(planSketches -> planSketches.forEach(planSketch -> verifier.apply(planSketch).ifPresent(plans::add)));
+
+        }
+
+
+        if(!plans.isEmpty()){
+
+            return Optional.of(plans);
+
+        } else {
+
+            return Optional.empty();
+
+        }
+
+
+
+
+    }
+
+
+    public Optional<Plan> verify(Set<Formula> background, State start, State goal, PlanSketch planSketch){
+
+        List<Action> sketchActions = planSketch.getActions();
+        List<State> expectedStates = CollectionUtils.newEmptyList();
+
+        Set<Formula> current = Sets.union(background, start.getFormulae());
+
+        expectedStates.add(State.initializeWith(current));
+        for(Action action: sketchActions){
+
+            Set<Formula> preconditions = action.getPreconditions();
+            Set<Formula> additions = action.getAdditions();
+            Set<Formula> deletions = action.getDeletions();
+
+            Optional<Justification> optPrecond = Operations.proveCached(current, Commons.makeAnd(preconditions));
+
+            if(optPrecond.isPresent()){
+
+                current.addAll(additions);
+                current.removeAll(deletions);
+                expectedStates.add(State.initializeWith(current));
+
+            } else {
+
+                return Optional.empty();
+            }
+
+        }
+
+
+        if(!Operations.proveCached(current, Commons.makeAnd(goal.getFormulae())).isPresent()){
+
+            return Optional.empty();
+        }
+
+        return Optional.of(new Plan(sketchActions, expectedStates, background));
+
+
+    }
+
 
     private Optional<Set<Plan>> planInternal(Set<Pair<State, Action>> history, int currentDepth, int maxDepth, Set<Formula> background, Set<Action> actions, State start, State goal) {
 

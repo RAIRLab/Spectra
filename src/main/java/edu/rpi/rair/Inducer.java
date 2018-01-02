@@ -8,6 +8,6 @@ import edu.rpi.rair.utils.PlanningProblem;
  */
 public interface Inducer {
 
-     Plan induce(PlanningProblem planningProblem, State start, Goal goal, Plan plan);
+     PlanMethod induce(PlanningProblem planningProblem, State start, Goal goal, Plan plan);
 
 }

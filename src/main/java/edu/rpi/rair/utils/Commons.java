@@ -12,6 +12,7 @@ import com.naveensundarg.shadow.prover.utils.Sets;
 import edu.rpi.rair.State;
 import us.bpsm.edn.parser.Parseable;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -49,25 +50,10 @@ public class Commons {
         return valueVariableMap;
     }
 
-    public static Formula generalize(Map<Value, Variable> universalValueVariableMap, Set<Formula> formulae){
-
-        Set<Value> allValues = formulae.stream().map(Formula::valuesPresent).reduce(Sets.newSet(), Sets::union).stream().filter(x->x.isConstant()).collect(Collectors.toSet());
-
-        Map<Value, Variable> existentialValueVariableMap = makeVariables(Sets.difference(allValues, universalValueVariableMap.keySet()), universalValueVariableMap.size() + 1);
+    public static Set<Formula> generalize(Map<Value, Variable> universalValueVariableMap, Set<Formula> formulae){
 
 
-        Map<Value, Variable> combinedMap  = combine((universalValueVariableMap), (existentialValueVariableMap));
-        Formula f = (new And(formulae.stream().collect(Collectors.toList()))).generalize(combinedMap);
-
-        Variable[] universalVars =  new Variable[universalValueVariableMap.values().size()];
-        universalVars = universalValueVariableMap.values().toArray(universalVars);
-
-        Variable[] existentialVars =  new Variable[existentialValueVariableMap.values().size()];
-        existentialVars = existentialValueVariableMap.values().toArray(existentialVars);
-
-
-        System.out.println(new Universal(universalVars, new Existential(existentialVars, f)));
-        return new Universal(universalVars, new Existential(existentialVars, f));
+        return formulae.stream().map(x->x.generalize(universalValueVariableMap)).collect(Collectors.toSet());
     }
 
     public static <U, V> Map<V, U> reverse(Map<U, V> map){
@@ -103,6 +89,11 @@ public class Commons {
         System.out.println("Timing for: " + message  +  (end - start)/1000 + " s");
 
         return  w;
+    }
+
+    public static And makeAnd(Set<Formula> formulae){
+
+        return new And(new ArrayList<>(formulae));
     }
 }
 

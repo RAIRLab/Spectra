@@ -17,6 +17,7 @@ public class Sandbox {
 
         List<GoalTrackingProblem> goalTrackingProblemList1 = (GoalTrackingProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/seriated/seriated_challenge_1.clj")));
 
+        List<GoalTrackingProblem> goalTrackingProblemList2 = (GoalTrackingProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/seriated/seriated_challenge_2.clj")));
 
         System.out.println(seriatedPlanMethod.apply(goalTrackingProblemList1.get(0).getPlanningProblem().getBackground(),
                             goalTrackingProblemList1.get(0).getPlanningProblem().getStart().getFormulae(),
@@ -24,6 +25,15 @@ public class Sandbox {
                     goalTrackingProblemList1.get(0).getPlanningProblem().getActions()
 
                 ));
+
+
+        System.out.println(seriatedPlanMethod.apply(goalTrackingProblemList2.get(0).getPlanningProblem().getBackground(),
+                goalTrackingProblemList2.get(0).getPlanningProblem().getStart().getFormulae(),
+                goalTrackingProblemList2.get(0).getGoalNamed("G1").getGoalState().getFormulae(),
+                goalTrackingProblemList2.get(0).getPlanningProblem().getActions()
+
+        ));
+
 
 
 

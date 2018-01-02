@@ -9,6 +9,7 @@ import com.naveensundarg.shadow.prover.utils.CollectionUtils;
 import com.naveensundarg.shadow.prover.utils.Reader;
 import com.naveensundarg.shadow.prover.utils.Sets;
 import edu.rpi.rair.Action;
+import edu.rpi.rair.PlanMethod;
 import edu.rpi.rair.State;
 import us.bpsm.edn.Keyword;
 import us.bpsm.edn.Symbol;
@@ -38,6 +39,7 @@ public class PlanningProblem {
     private Map<String, Action> actionMap;
 
     private Set<Value> avoidIfPossible;
+    private final List<PlanMethod> planMethods;
 
     private static final Keyword BACKGROUND = Keyword.newKeyword("background");
     private static final Keyword START = Keyword.newKeyword("start");
@@ -63,7 +65,7 @@ public class PlanningProblem {
         this.name = name;
         this.actionMap = CollectionUtils.newMap();
         this.avoidIfPossible = avoidIfPossible;
-
+        this.planMethods = CollectionUtils.newEmptyList();
         this.expectedActionSequencesOpt = Optional.empty();
 
     }
@@ -77,6 +79,7 @@ public class PlanningProblem {
         this.name = name;
         this.actionMap = CollectionUtils.newMap();
         this.avoidIfPossible = avoidIfPossible;
+        this.planMethods = CollectionUtils.newEmptyList();
 
         this.expectedActionSequencesOpt = Optional.of(expectedActionSequences);
     }
@@ -340,6 +343,15 @@ public class PlanningProblem {
         return avoidIfPossible;
     }
 
+
+    public List<PlanMethod> getPlanMethods() {
+        return planMethods;
+    }
+
+    public void addToPlanMethods(List<PlanMethod>  methods){
+
+        planMethods.addAll(methods);
+    }
     @Override
     public String toString() {
         return "PlanningProblem{" +

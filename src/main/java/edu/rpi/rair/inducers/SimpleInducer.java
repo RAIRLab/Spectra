@@ -10,19 +10,18 @@ import edu.rpi.rair.*;
 import edu.rpi.rair.utils.Commons;
 import edu.rpi.rair.utils.PlanningProblem;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * Created by naveensundarg on 12/19/17.
  */
-public class SimpleInducer implements Inducer{
+
+public class SimpleInducer implements Inducer {
+
     @Override
-    public Plan induce(PlanningProblem planningProblem, State start, Goal goal, Plan plan) {
+    public PlanMethod induce(PlanningProblem planningProblem, State start, Goal goal, Plan plan) {
 
 
         List<Action> actionList = plan.getActions();
@@ -41,9 +40,14 @@ public class SimpleInducer implements Inducer{
 
         Map<Value, Variable> valueVariableMap = Commons.makeVariables(values);
 
-        Function<Set<Formula>,Set<Formula>> getRelevantFormula = formulae -> formulae.stream().
-                filter(formula -> !Sets.intersection(values, formula.valuesPresent()).isEmpty()).
-                collect(Collectors.toSet());
+        Function<Set<Formula>,Set<Formula>> getRelevantFormula = formulae -> {
+
+         return formulae.stream().
+                 filter(formula -> Sets.difference(formula.valuesPresent().stream().filter(Value::isConstant).collect(Collectors.toSet()),
+                                                    values).isEmpty() &&
+                         !Sets.intersection(values, formula.valuesPresent()).isEmpty()).
+                 collect(Collectors.toSet());
+        };
 
         Set<Formula> relevantBackgroundFormula  = getRelevantFormula.apply(backgroundFormula);
         Set<Formula> relevantInitFormula = getRelevantFormula.apply(initFormula);
@@ -58,6 +62,14 @@ public class SimpleInducer implements Inducer{
         System.out.println(relevantInitFormula);
         System.out.println(relevantGoalFormula);
 
-        return null;
-    }
+        //PlanMethod(Set<Formula> goalPreconditions, Set<Formula> backGroundStatePreconditions, List<Variable> freeVariables, List<Compound> actionCompounds
+
+
+       return new PlanMethod(Commons.generalize(valueVariableMap, relevantGoalFormula),
+                             Sets.union(Commons.generalize(valueVariableMap, relevantBackgroundFormula),
+                                        Commons.generalize(valueVariableMap, relevantInitFormula)),
+                             new ArrayList<>(valueVariableMap.values()), actionCompounds.stream().map(x-> (Compound) x.generalize(valueVariableMap)).
+                                                                            collect(Collectors.toList()));
+
+     }
 }

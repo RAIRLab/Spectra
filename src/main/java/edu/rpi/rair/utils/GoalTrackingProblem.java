@@ -4,6 +4,7 @@ import com.naveensundarg.shadow.prover.representations.formula.Formula;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
 import com.naveensundarg.shadow.prover.utils.Reader;
 import edu.rpi.rair.Goal;
+import edu.rpi.rair.PlanMethod;
 import edu.rpi.rair.State;
 import us.bpsm.edn.Keyword;
 import us.bpsm.edn.parser.Parseable;
@@ -15,6 +16,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+
+import static edu.rpi.rair.utils.Reader.readPlanMethodsFrom;
 
 /**
  * Created by naveensundarg on 1/13/17.
@@ -32,6 +35,7 @@ public class GoalTrackingProblem {
     private static final Keyword PRIORITY = Keyword.newKeyword("priority");
     private static final Keyword STATE = Keyword.newKeyword("state");
 
+
     public GoalTrackingProblem(PlanningProblem planningProblem, Set<Goal> goals) {
         this.planningProblem = planningProblem;
         this.goals = goals;
@@ -44,7 +48,19 @@ public class GoalTrackingProblem {
 
     }
 
-    public static List<GoalTrackingProblem> readFromFile(InputStream inputStream) throws Reader.ParsingException {
+    public static List<GoalTrackingProblem> readFromFiles(InputStream definitionInputStream, InputStream methodsInputStream) throws Reader.ParsingException {
+
+        List<GoalTrackingProblem> goalTrackingProblems = readFromFile(definitionInputStream);
+
+        List<PlanMethod>  planMethods = readPlanMethodsFrom(methodsInputStream);
+
+        goalTrackingProblems.stream().map(GoalTrackingProblem::getPlanningProblem).forEach(x->x.addToPlanMethods(planMethods));
+
+        return goalTrackingProblems;
+    }
+
+
+        public static List<GoalTrackingProblem> readFromFile(InputStream inputStream) throws Reader.ParsingException {
 
         Parseable parseable = Parsers.newParseable(new InputStreamReader(inputStream));
         Parser parser = Parsers.newParser(Parsers.defaultConfiguration());

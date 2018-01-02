@@ -39,8 +39,10 @@ public class LearningSystem {
 
         Visualizer.setShouldVisualize(false);
 
-        List<GoalTrackingProblem> goalTrackingProblemList1 = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("seriated_challenge_1.clj")));
-        List<GoalTrackingProblem> goalTrackingProblemList2 = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("seriated_challenge_2.clj")));
+        List<GoalTrackingProblem> goalTrackingProblemList1 = (GoalTrackingProblem.readFromFiles(Sandbox.class.getResourceAsStream("../problems/seriated/seriated_challenge_1.clj"),
+                Sandbox.class.getResourceAsStream("../problems/seriated/methods.clj")));
+        List<GoalTrackingProblem> goalTrackingProblemList2 = (GoalTrackingProblem.readFromFiles(Sandbox.class.getResourceAsStream("../problems/seriated/seriated_challenge_2.clj"),
+                Sandbox.class.getResourceAsStream("../problems/seriated/methods.clj")));
 
 
         GoalTrackingProblem goalTrackingProblem1 = goalTrackingProblemList1.get(0);

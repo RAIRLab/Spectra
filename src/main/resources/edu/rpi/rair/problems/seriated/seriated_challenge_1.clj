@@ -20,16 +20,12 @@
                       ;;; Sizes of cups
                       (< (size a) (size b))
                       (< (size b) (size c))
-                      (< (size c) (size d))
-                      (< (size d) (size e))
-                      (< (size e) (size f))
-                      (< (size f) (size g))
-                      (< (size g) (size h))]
+                      (< (size c) (size d))]
 
 
          :start      [(In a b)
                       (In b d)
-                       (Empty c)]
+                      (Empty c)]
 
 
          :goal       [ ]
@@ -46,12 +42,17 @@
                                       :deletions     [(In ?x ?y)]})]}
 
  :goals {G1 {:priority 1.0
+             :context { :work-from-scratch false
+                        :plan-methods
+                        (define-method planMethod [?b  ?d  ?c]
+                                       {:goal    [(In ?b ?c)  (In ?c ?d)]
+                                        :while   [(< (size  ?c) (size  ?d))  (< (size  ?b) (size  ?c))  (In ?b ?d)  (Empty ?c)]
+                                        :actions [(removeFrom  ?b ?d)  (placeInside  ?b ?c)  (placeInside  ?c ?d)]})}
              :state    [(In a b)
                         (In b c)
                         (In c d)]}}
 
 
-;;(removeFrom  b d)  (placeInside  b c)  (placeInside  c d)
 
 
  }

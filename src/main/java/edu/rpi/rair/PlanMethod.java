@@ -111,13 +111,18 @@ public class PlanMethod {
 
     }
 
+   /* (define-method planMethod [?b ?c ?d]
+    {:goal [(In ?b ?c) (In ?c ?d)]
+   :while [(In ?b ?d) (Empty ?c)
+        (< (size ?c) (size ?d))
+        (< (size ?b) (size ?c))]
+   :actions [(removeFrom  ?b ?d) (placeInside  ?b ?c) (placeInside  ?c ?d)]})
+*/
     @Override
     public String toString() {
-        return "PlanMethod{" +
-                "backGroundStatePreconditions=" + backGroundStatePreconditions +
-                ", goalPreconditions=" + goalPreconditions +
-                ", freeVariables=" + freeVariables +
-                ", actionCompounds=" + actionCompounds +
-                '}';
+        return "(define-method planMethod " +   freeVariables.toString().replace(",", " ")  + "\n" +
+                "\t{:goal    " + goalPreconditions.toString().replace(",", " ") + "\n" +
+                "\t:while   " + backGroundStatePreconditions.toString().replace(",", " ") + "\n" +
+                "\t:actions " + actionCompounds.toString().replace(",", " ") + "})";
     }
 }

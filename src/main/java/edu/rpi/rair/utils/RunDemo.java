@@ -5,8 +5,7 @@ import com.diogonunes.jcdp.color.api.Ansi;
 import com.google.common.collect.Sets;
  import com.naveensundarg.shadow.prover.core.Prover;
 import com.naveensundarg.shadow.prover.core.SnarkWrapper;
-import com.naveensundarg.shadow.prover.sandboxes.Sandbox;
-import com.naveensundarg.shadow.prover.utils.Problem;
+ import com.naveensundarg.shadow.prover.utils.Problem;
 import com.naveensundarg.shadow.prover.utils.ProblemReader;
 import com.naveensundarg.shadow.prover.utils.Reader;
 import edu.rpi.rair.*;
@@ -62,14 +61,14 @@ public class RunDemo {
 
         Visualizer.setShouldVisualize(false);
 
-       runProblem("seriated_challenge_1.clj");
+       runProblem("../problems/seriated/seriated_challenge_1.clj");
      //  runProblem("seriated_challenge_2.clj");
 
 
     }
 
     private static void runProblem(String name) throws Reader.ParsingException {
-        List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream(name)));
+        List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Sandbox.class.getResourceAsStream(name)));
 
 
         GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);
@@ -130,10 +129,10 @@ public class RunDemo {
     public static void planningProblemWarmUp() throws Reader.ParsingException {
 
 
-        for (int i = 0; i < 0; i++) {
+        for (int i = 0; i < 1; i++) {
 
 
-            List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Planner.class.getResourceAsStream("goal_management_1.clj")));
+            List<GoalTrackingProblem> goalTrackingProblemList = (GoalTrackingProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/prisoner/goal_management_1.clj")));
 
 
             GoalTrackingProblem goalTrackingProblem = goalTrackingProblemList.get(0);
@@ -184,7 +183,7 @@ public class RunDemo {
         Optional<Plan> possibleGoalPlan = goalTracker.adoptGoal(g);
         if (possibleGoalPlan.isPresent()) {
 
-            simpleInducer.induce(goalTracker.getProblem(), goalTracker.getProblem().getStart(), g, possibleGoalPlan.get());
+            System.out.println(simpleInducer.induce(goalTracker.getProblem(), goalTracker.getProblem().getStart(), g, possibleGoalPlan.get()));
 
             printSuccessLater("Successfully added:", g.getName());
             printDebug1Later("Current Goals and Constraint:", "\n" + goalTracker.getCurrentGoals().stream().collect(Collectors.toSet()).toString());
