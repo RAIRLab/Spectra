@@ -23,6 +23,7 @@ public class Action {
     private final Set<Formula> additions;
     private final Set<Formula> deletions;
     private final List<Variable> freeVariables;
+    private final List<Variable> interestedVars;
 
     private final String name;
     private final Formula precondition;
@@ -32,7 +33,7 @@ public class Action {
 
     private final Compound shorthand;
 
-    public Action(String name, Set<Formula> preconditions, Set<Formula> additions, Set<Formula> deletions, List<Variable> freeVariables) {
+    public Action(String name, Set<Formula> preconditions, Set<Formula> additions, Set<Formula> deletions, List<Variable> freeVariables, List<Variable> interestedVars) {
         this.name = name;
         this.preconditions = preconditions;
 
@@ -52,10 +53,11 @@ public class Action {
                 additions.stream().mapToInt(Formula::getWeight).sum() +
                 deletions.stream().mapToInt(Formula::getWeight).sum();
 
-        List<Value> valuesList = freeVariables.stream().collect(Collectors.toList());;
+        List<Value> valuesList = interestedVars.stream().collect(Collectors.toList());;
         this.shorthand = new Compound(name, valuesList);
 
         this.trivial = computeTrivialOrNot();
+        this.interestedVars = interestedVars;
     }
 
     public Action(String name, Set<Formula> preconditions, Set<Formula> additions,
@@ -83,6 +85,7 @@ public class Action {
 
         this.shorthand = shorthand;
         this.trivial = computeTrivialOrNot();
+        this.interestedVars = freeVariables;
 
     }
 
@@ -93,7 +96,17 @@ public class Action {
                                          Set<Formula> deletions,
                                          List<Variable> freeVariables) {
 
-        return new Action(name, preconditions, additions, deletions, freeVariables);
+        return new Action(name, preconditions, additions, deletions, freeVariables, freeVariables);
+
+    }
+
+    public static Action buildActionFrom(String name,
+                                         Set<Formula> preconditions,
+                                         Set<Formula> additions,
+                                         Set<Formula> deletions,
+                                         List<Variable> freeVariables, List<Variable> interestedVars) {
+
+        return new Action(name, preconditions, additions, deletions, freeVariables, interestedVars);
 
     }
 
@@ -148,7 +161,7 @@ public class Action {
             }
         }
 
-        List<Value> valuesList = freeVariables.stream().collect(Collectors.toList());;
+        List<Value> valuesList = interestedVars.stream().collect(Collectors.toList());;
         Compound shorthand = (Compound)(new Compound(name, valuesList)).apply(binding);
         return new Action(name, newPreconditions, newAdditions, newDeletions, newFreeVraibles, shorthand);
     }

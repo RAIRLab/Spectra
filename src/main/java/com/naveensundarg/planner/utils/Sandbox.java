@@ -1,6 +1,8 @@
 package com.naveensundarg.planner.utils;
 
+import com.naveensundarg.planner.DepthFirstPlanner;
 import com.naveensundarg.planner.PlanMethod;
+import com.naveensundarg.planner.Planner;
 
 import java.util.List;
 
@@ -9,9 +11,9 @@ import java.util.List;
  */
 public class Sandbox {
 
-    public static void main(String[] args) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
+    public static void demoPlanMethods(String[] args) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
 
-        PlanMethod seriatedPlanMethod = (Reader.readPlanMethodsFrom(Sandbox.class.getResourceAsStream("../problems/seriated/methods.clj"))).get(0);
+        PlanMethod seriatedPlanMethod = (Reader.readPlanMethodsFrom(Sandbox.class.getResourceAsStream("../problems/learning/dry.clj"))).get(0);
 
 
         List<GoalTrackingProblem> goalTrackingProblemList1 = (GoalTrackingProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/seriated/seriated_challenge_1.clj")));
@@ -33,6 +35,23 @@ public class Sandbox {
 
         ));
 
+
+
+
+    }
+
+    public static void main(String[] args) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
+
+        List<PlanningProblem> planningProblemList = (PlanningProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/learning/reasoning_5.clj")));
+
+        Planner depthFirstPlanner = new DepthFirstPlanner();
+
+        PlanningProblem planningProblem = planningProblemList.stream().filter(problem -> problem.getName().equals("learning")).findFirst().get();
+
+
+        depthFirstPlanner.plan(planningProblem.getBackground(), planningProblem.getActions(), planningProblem.getStart(), planningProblem.getGoal()).ifPresent(
+                System.out::println
+        );
 
 
 

@@ -20,7 +20,7 @@ public class DepthFirstPlanner implements Planner {
 
 
     private static  int MAX_DEPTH = 5;
-    private static  boolean EXHAUSTIVE_TILL_MAX_DEPTH = true;
+    private static  boolean EXHAUSTIVE_TILL_MAX_DEPTH = false;
 
     private  boolean USE_METHODS, WORK_FROM_SCRATCH;
 

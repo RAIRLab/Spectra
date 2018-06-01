@@ -146,21 +146,21 @@
  :start          []
  :goal           [(Declaration god-exists)]
  :actions
- [(define-action declare-P [?p]
-    {:preconditions [(Belief ?p)]
-     :additions     [(Declaration ?p)]
-     :deletions     [(Private ?p)]})
+                 [(define-action declare-P [?p]
+                                 {:preconditions [(Belief ?p)]
+                                  :additions     [(Declaration ?p)]
+                                  :deletions     [(Private ?p)]})
 
-  (define-action believe-with-support [?p]
-    {:preconditions [(Proposition ?p)
-                     (HasSupport ?p)]
-     :additions     [(Belief ?p)]
-     :deletions     []})
+                  (define-action believe-with-support [?p]
+                                 {:preconditions [(Proposition ?p)
+                                                  (HasSupport ?p)]
+                                  :additions     [(Belief ?p)]
+                                  :deletions     []})
 
-  (define-action believe-without-support [?p]
-    {:preconditions [(Proposition ?p)]
-     :additions     [(Belief ?p)]
-     :deletions     []})]
+                  (define-action believe-without-support [?p]
+                                 {:preconditions [(Proposition ?p)]
+                                  :additions     [(Belief ?p)]
+                                  :deletions     []})]
 
  :expected-plans ([believe-P declare-P])}
 
@@ -200,24 +200,24 @@
 
 {:name           "reasoning 3"
  :background     []
- :start          [(! A) (!  B)
+ :start          [(! A) (! B)
                   (Prop S)
                   (! (if (and A B) C))
                   ]
- :goal           [(! (if S C) )]
+ :goal           [(! (if S C))]
 
  :actions        [(define-action and-intro [?p ?q]
-                    {:preconditions [(! ?p) (!  ?q)]
-                     :additions     [(! (and ?p ?q))]
-                     :deletions     []})
+                                 {:preconditions [(! ?p) (! ?q)]
+                                  :additions     [(! (and ?p ?q))]
+                                  :deletions     []})
                   (define-action cond-elim [?p ?q]
-                    {:preconditions [(! (if ?p ?q)) (! ?p)]
-                     :additions     [(! ?q)]
-                     :deletions     []})
+                                 {:preconditions [(! (if ?p ?q)) (! ?p)]
+                                  :additions     [(! ?q)]
+                                  :deletions     []})
 
                   (define-action cond-intro [?p ?q]
-                    {:preconditions [ (Prop ?p) (! ?q)]
-                     :additions     [(! (if ?p ?q))]
-                     :deletions     []})]
+                                 {:preconditions [(Prop ?p) (! ?q)]
+                                  :additions     [(! (if ?p ?q))]
+                                  :deletions     []})]
 
  :expected-plans ([and-intro])}

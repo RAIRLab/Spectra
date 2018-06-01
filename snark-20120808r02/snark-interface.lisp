@@ -91,7 +91,7 @@
   (snark:initialize :verbose  verbose)
   (if (not verbose) (snark-deverbose) )
   (temp-sorts)
-  (snark:run-time-limit 0.5)
+  (snark:run-time-limit 5)
   (snark:assert-supported t)
   (snark:assume-supported t)
   (snark:prove-supported t)

@@ -312,7 +312,10 @@ public class PlanningProblem {
                 Set<Formula> additions = readFrom((List<?>) actionSpec.get(ADDITIONS));
                 Set<Formula> deletions = readFrom((List<?>) actionSpec.get(DELETIONS));
 
-                return Action.buildActionFrom(name, preconditions, additions, deletions, vars);
+                List<Variable> interestedVars = CollectionUtils.newEmptyList();
+                interestedVars.addAll(vars);
+                vars.addAll(preconditions.stream().map(Formula::variablesPresent).reduce(Sets.newSet(), Sets::union));
+                return Action.buildActionFrom(name, preconditions, additions, deletions, vars, interestedVars);
 
 
             } catch (Reader.ParsingException e) {

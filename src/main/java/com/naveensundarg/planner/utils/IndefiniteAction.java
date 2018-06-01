@@ -10,6 +10,6 @@ import java.util.Set;
 public class IndefiniteAction extends Action {
 
     private IndefiniteAction(String name, Set<Formula> preconditions, Set<Formula> additions, Set<Formula> deletions, List<Variable> freeVariables) {
-        super(name, preconditions, additions, deletions, freeVariables);
+        super(name, preconditions, additions, deletions, freeVariables, freeVariables);
     }
 }
