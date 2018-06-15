@@ -42,11 +42,11 @@ public class Sandbox {
 
     public static void main(String[] args) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
 
-        List<PlanningProblem> planningProblemList = (PlanningProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/learning/reasoning_5.clj")));
+        List<PlanningProblem> planningProblemList = (PlanningProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/tora/sodacan.clj")));
 
         Planner depthFirstPlanner = new DepthFirstPlanner();
 
-        PlanningProblem planningProblem = planningProblemList.stream().filter(problem -> problem.getName().equals("learning")).findFirst().get();
+        PlanningProblem planningProblem = planningProblemList.stream().filter(problem -> problem.getName().equals("soda can challenge")).findFirst().get();
 
 
         depthFirstPlanner.plan(planningProblem.getBackground(), planningProblem.getActions(), planningProblem.getStart(), planningProblem.getGoal()).ifPresent(
