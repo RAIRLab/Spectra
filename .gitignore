@@ -23,3 +23,4 @@ planner.iml
 .idea/libraries/Maven__us_bpsm_edn_java_0_5_0.xml
 target/*
 
+*.fasl

@@ -132,7 +132,14 @@ public class Action {
 
     public List<Variable> openVars() {
 
-        return freeVariables;
+        Set<Variable> variables = Sets.newSet();
+
+        variables.addAll(freeVariables);
+
+        List<Variable> variablesList = CollectionUtils.newEmptyList();
+
+        variablesList.addAll(variables);
+        return variablesList;
 
     }
 

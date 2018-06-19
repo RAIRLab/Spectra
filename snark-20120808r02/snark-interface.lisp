@@ -90,15 +90,15 @@
 (defun setup-snark (&key (time-limit 5) (verbose nil))
   (snark:initialize :verbose  verbose)
   (if (not verbose) (snark-deverbose) )
-  (temp-sorts)
-  (snark:run-time-limit 5)
+  (snark:run-time-limit 0.5)
   (snark:assert-supported t)
   (snark:assume-supported t)
   (snark:prove-supported t)
-  (snark:use-resolution t)
+  (snark:use-hyperresolution t)
   (snark:use-paramodulation t)
 
-  (snark:allow-skolem-symbols-in-answers t))
+  (snark::declare-code-for-lists)
+  (snark:allow-skolem-symbols-in-answers nil))
 
 (defun row-formula (name))
 
