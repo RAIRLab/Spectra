@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class DepthFirstPlanner implements Planner {
 
 
-    private static  int MAX_DEPTH = 5;
+    private static  int MAX_DEPTH = 6;
     private static  boolean EXHAUSTIVE_TILL_MAX_DEPTH = false;
 
     private  boolean USE_METHODS, WORK_FROM_SCRATCH;
@@ -200,8 +200,11 @@ public class DepthFirstPlanner implements Planner {
 
             if(optPrecond.isPresent()){
 
-                current.addAll(additions);
+
+                current.removeAll(current.stream().filter(u-> deletions.stream().anyMatch(d-> Operations.equivalent(background, d, u))).collect(Collectors.toSet()));
                 current.removeAll(deletions);
+                current.addAll(additions.stream().map(Simplifier::simplify).collect(Collectors.toSet()));
+
                 expectedStates.add(State.initializeWith(current));
 
             } else {

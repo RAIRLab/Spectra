@@ -3,8 +3,12 @@ package com.naveensundarg.planner.utils;
 import com.naveensundarg.planner.DepthFirstPlanner;
 import com.naveensundarg.planner.PlanMethod;
 import com.naveensundarg.planner.Planner;
+import com.naveensundarg.planner.Simplifier;
+import com.naveensundarg.shadow.prover.representations.formula.Predicate;
 
 import java.util.List;
+
+import static com.naveensundarg.shadow.prover.utils.Reader.readFormulaFromString;
 
 /**
  * Created by naveensundarg on 12/22/17.
@@ -42,19 +46,19 @@ public class Sandbox {
 
     public static void main(String[] args) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
 
-        List<PlanningProblem> planningProblemList = (PlanningProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/tora/attend.clj")));
+
+
+         List<PlanningProblem> planningProblemList = (PlanningProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/tora/attend.clj")));
 
         Planner depthFirstPlanner = new DepthFirstPlanner();
 
         PlanningProblem planningProblem = planningProblemList.stream().filter(problem -> problem.getName().equals("soda can challenge 2")).findFirst().get();
 
 
-        depthFirstPlanner.plan(planningProblem.getBackground(), planningProblem.getActions(), planningProblem.getStart(), planningProblem.getGoal()).ifPresent(
-                y->{
+        depthFirstPlanner.plan(planningProblem.getBackground(), planningProblem.getActions(), planningProblem.getStart(), planningProblem.getGoal()).ifPresent(plans-> {
 
-                    System.out.println(y);
-                }
-        );
+                    plans.stream().forEach(System.out::println);
+                });
 
 
 

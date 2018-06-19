@@ -241,7 +241,7 @@ public class Operations {
 
             Set<Formula> newFormulae = Sets.union(background, state.getFormulae());
 
-            newFormulae = Sets.union(newFormulae, action.instantiateAdditions(binding));
+            newFormulae = Sets.union(newFormulae, action.instantiateAdditions(binding).stream().map(Simplifier::simplify).collect(Collectors.toSet()));
 
 
             newFormulae = Sets.difference(newFormulae, formulaeToRemove);

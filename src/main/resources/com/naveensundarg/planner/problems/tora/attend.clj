@@ -34,9 +34,8 @@
               (attend c)]
 
  :actions    [;; checkbehind an object
-               (define-action attend [?item]
-                 {:preconditions [(member ?item ?list)
-                                  (state ?list)]
+               (define-action attend [?item ?list]
+                 {:preconditions [(and (state ?list) (member ?item ?list))]
                   :additions     [(attend ?item)
                                   (state (remove ?item ?list))]
                   :deletions     [(state ?list)]})]}
