@@ -198,26 +198,26 @@
 
  :expected-plans ([and-intro])}
 
-{:name           "reasoning 3"
- :background     []
- :start          [(! A) (! B)
-                  (Prop S)
-                  (! (if (and A B) C))
-                  ]
- :goal           [(! (if S C))]
-
- :actions        [(define-action and-intro [?p ?q]
-                                 {:preconditions [(! ?p) (! ?q)]
-                                  :additions     [(! (and ?p ?q))]
-                                  :deletions     []})
-                  (define-action cond-elim [?p ?q]
-                                 {:preconditions [(! (if ?p ?q)) (! ?p)]
-                                  :additions     [(! ?q)]
-                                  :deletions     []})
-
-                  (define-action cond-intro [?p ?q]
-                                 {:preconditions [(Prop ?p) (! ?q)]
-                                  :additions     [(! (if ?p ?q))]
-                                  :deletions     []})]
-
- :expected-plans ([and-intro])}
+;{:name           "reasoning 3"
+; :background     []
+; :start          [(! A) (! B)
+;                  (Prop S)
+;                  (! (if (and A B) C))
+;                  ]
+; :goal           [(! (if S C))]
+;
+; :actions        [(define-action and-intro [?p ?q]
+;                                 {:preconditions [(! ?p) (! ?q)]
+;                                  :additions     [(! (and ?p ?q))]
+;                                  :deletions     []})
+;                  (define-action cond-elim [?p ?q]
+;                                 {:preconditions [(! (if ?p ?q)) (! ?p)]
+;                                  :additions     [(! ?q)]
+;                                  :deletions     []})
+;
+;                  (define-action cond-intro [?p ?q]
+;                                 {:preconditions [(Prop ?p) (! ?q)]
+;                                  :additions     [(! (if ?p ?q))]
+;                                  :deletions     []})]
+;
+; :expected-plans ([and-intro])}

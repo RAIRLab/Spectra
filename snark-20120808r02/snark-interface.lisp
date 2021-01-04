@@ -89,8 +89,8 @@
 
 (defun setup-snark (&key (time-limit 5) (verbose nil))
   (snark:initialize :verbose  verbose)
-  (if (not verbose) (snark-deverbose) )
-  (snark:run-time-limit 1)
+;;  (if (not verbose) (snark-deverbose) )
+  (snark:run-time-limit 5)
   (snark:assert-supported t)
   (snark:assume-supported t)
   (snark:prove-supported t)

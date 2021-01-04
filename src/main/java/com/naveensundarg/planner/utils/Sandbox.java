@@ -1,12 +1,13 @@
 package com.naveensundarg.planner.utils;
 
-import com.naveensundarg.planner.DepthFirstPlanner;
-import com.naveensundarg.planner.PlanMethod;
-import com.naveensundarg.planner.Planner;
-import com.naveensundarg.planner.Simplifier;
+import com.diogonunes.jcdp.color.ColoredPrinter;
+import com.diogonunes.jcdp.color.api.Ansi;
+import com.naveensundarg.planner.*;
 import com.naveensundarg.shadow.prover.representations.formula.Predicate;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.naveensundarg.shadow.prover.utils.Reader.readFormulaFromString;
 
@@ -44,21 +45,38 @@ public class Sandbox {
 
     }
 
+    static ColoredPrinter cp = new ColoredPrinter.Builder(1, false).build();
+
+
     public static void main(String[] args) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
 
 
 
-         List<PlanningProblem> planningProblemList = (PlanningProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/tora/attend.clj")));
+         List<PlanningProblem> planningProblemList = (PlanningProblem.readFromFile(Sandbox.class.getResourceAsStream("../problems/ai2thor/FloorPlan28.clj")));
 
         Planner depthFirstPlanner = new DepthFirstPlanner();
 
-        PlanningProblem planningProblem = planningProblemList.stream().filter(problem -> problem.getName().equals("soda can challenge 2")).findFirst().get();
+        PlanningProblem planningProblem = planningProblemList.stream().filter(problem -> problem.getName().equals("FloorPlan28")).findFirst().get();
 
 
         depthFirstPlanner.plan(planningProblem.getBackground(), planningProblem.getActions(), planningProblem.getStart(), planningProblem.getGoal()).ifPresent(plans-> {
 
-                    plans.stream().forEach(System.out::println);
-                });
+           // System.out.println(plans);
+
+            List<Plan> plansList = plans.stream().sorted(Comparator.comparing(plan -> plan.getActions().size())).collect(Collectors.toList());
+                   if(!plansList.isEmpty()) {
+
+                       System.out.println("***************************");
+                       cp.setAttribute(Ansi.Attribute.BOLD);
+                       cp.println("PLAN FOUND");
+                       cp.clear();
+                       System.out.println("------------------------------");
+                       cp.setForegroundColor(Ansi.FColor.BLACK);
+                       cp.setBackgroundColor(Ansi.BColor.GREEN);   //setting format
+
+                       cp.println(plansList.get(0));
+                   }
+                 });
 
 
 
