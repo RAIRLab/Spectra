@@ -1,0 +1,13 @@
+version: "3.0"
+services:
+  py-shadowprover:
+    image: naveensundarg/py-interface-spectra:0.1.3
+    ports:
+      - "25334:25334"
+      - "25333:25333"
+  interface:
+    image: naveensundarg/py-interface-spectra:0.1.3
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./files:/base
