@@ -1,6 +1,18 @@
 #!/bin/sh
 
-# TODO: Argument check and show usage
+set -o errexit
+set -o nounset
+
+show_usage() {
+    echo "Usage: ./run_spectra.sh [FILENAME]"
+    exit 1
+}
+
+# Check argument count
+if [ "$#" -ne 1 ]; then
+    show_usage
+fi
+
 
 mvn -q exec:java -Dexec.mainClass="com.naveensundarg.planner.utils.Runner" -Dexec.args="$1"
 
