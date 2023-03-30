@@ -13,6 +13,11 @@ if [ "$#" -ne 1 ]; then
     show_usage
 fi
 
+if ! command -v mvn &> /dev/null; then
+    echo "Maven (mvn) is not found in the path"
+    exit 1
+fi
+
 
 mvn -q exec:java -Dexec.mainClass="com.naveensundarg.planner.utils.Runner" -Dexec.args="$1"
 
