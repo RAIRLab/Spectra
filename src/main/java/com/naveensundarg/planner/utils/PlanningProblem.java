@@ -342,7 +342,7 @@ public class PlanningProblem {
         Set<Formula> formulae = objects.stream().map(x -> {
             try {
                 return Reader.readFormula(x);
-            } catch (Reader.ParsingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
