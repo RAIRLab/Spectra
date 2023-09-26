@@ -44,17 +44,17 @@ public final class Runner {
             return;
         }
         
-        Planner breadthFirstPlanner = new BreadthFirstPlanner();
+        BreadthFirstPlanner breadthFirstPlanner = new BreadthFirstPlanner();
 
         for (PlanningProblem planningProblem : planningProblemList) {
-            Optional<Set<Plan>> optionalPlans = breadthFirstPlanner.plan(
+            Set<Plan> plans = breadthFirstPlanner.plan(
                 planningProblem.getBackground(),
                 planningProblem.getActions(),
                 planningProblem.getStart(),
                 planningProblem.getGoal());
 
-            if(optionalPlans.isPresent()) {
-                System.out.println(optionalPlans.get().toString());
+            if(plans.size() > 0) {
+                System.out.println(plans.toString());
             }
             else {
                 System.out.println("FAILED");

@@ -6,8 +6,10 @@ import com.naveensundarg.planner.utils.Visualizer;
 import com.naveensundarg.shadow.prover.core.proof.Justification;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
-import com.naveensundarg.shadow.prover.utils.Pair;
 import com.naveensundarg.shadow.prover.utils.Sets;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 
 import java.util.*;
 import java.util.function.Function;
@@ -250,7 +252,7 @@ public class DepthFirstPlanner implements Planner {
                 for (Pair<State, Action> stateActionPair : nextStateActionPairs.get()) {
 
                     Visualizer.push();
-                    Optional<Set<Plan>> planOpt = planInternal(history, currentDepth + 1, maxDepth, background, actions, stateActionPair.first(), goal);
+                    Optional<Set<Plan>> planOpt = planInternal(history, currentDepth + 1, maxDepth, background, actions, stateActionPair.getLeft(), goal);
 
                     Visualizer.pop();
 
@@ -259,8 +261,8 @@ public class DepthFirstPlanner implements Planner {
                         atleastOnePlanFound = true;
                         Set<Plan> nextPlans = planOpt.get();
 
-                        State nextSate = stateActionPair.first();
-                        Action instantiatedAction = stateActionPair.second();
+                        State nextSate = stateActionPair.getLeft();
+                        Action instantiatedAction = stateActionPair.getRight();
 
                         Set<Plan> augmentedPlans = nextPlans.stream().
                                 map(plan -> plan.getPlanByStartingWith(instantiatedAction, nextSate)).

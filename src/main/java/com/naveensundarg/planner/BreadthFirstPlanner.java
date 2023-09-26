@@ -1,119 +1,120 @@
 package com.naveensundarg.planner;
 
-import com.naveensundarg.planner.utils.PlanningProblem;
 import com.naveensundarg.shadow.prover.representations.formula.Formula;
-import com.naveensundarg.shadow.prover.utils.Pair;
-import com.naveensundarg.shadow.prover.utils.Sets;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Triple;
-
-
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * Created by naveensundarg on 1/13/17.
+ * Created by brandonrozek on 03/29/2023.
  */
-public class BreadthFirstPlanner implements Planner {
+public class BreadthFirstPlanner {
 
-    private static int MAX_DEPTH = 7;
+    // The longest plan to search for, -1 means no bound
+    private int MAX_DEPTH = -1;
+    // Number of plans to look for, -1 means up to max_depth
+    private int K = -1;
 
     public BreadthFirstPlanner(){ }
 
-    public static int getMaxDepth() {
-        return MAX_DEPTH;
-    }
-
-    public static void setMaxDepth(int maxDepth) {
-        MAX_DEPTH = maxDepth;
-    }
-
-    @Override
-    public Optional<Set<Plan>> plan(Set<Formula> background, Set<Action> actions, State start, State goal) {
-
+    public Set<Plan> plan(Set<Formula> background, Set<Action> actions, State start, State goal) {
 
         // Search Space Data Structures
         Set<State> history = new HashSet<State>();
-        Queue<Triple<List<State>, List<Action>, Integer>> search = new ArrayDeque<Triple<List<State>,List<Action>,Integer>>();
+        // Each node in the search space consists of
+        // (state, sequence of actions from initial)
+        Queue<Pair<List<State>, List<Action>>> search = new ArrayDeque<Pair<List<State>,List<Action>>>();
 
         // Submit Initial State
-        search.add(Triple.of(List.of(start), new ArrayList<Action>(), 0));
+        search.add(Pair.of(List.of(start), new ArrayList<Action>()));
+
+        // Current set of plans
+        Set<Plan> plansFound = new HashSet<Plan>();
 
         // Breadth First Traversal until
-        // - Goal Reached
         // - No more actions can be applied
         // - Max depth reached
-        while (!search.isEmpty()) {
+        // - Found K plans
+        while (!search.isEmpty() && !(K > 0 && plansFound.size() >= K)) {
 
-            Triple<List<State>, List<Action>, Integer> currentSearch = search.remove();
-            
-            // Return if we're past the depth limit
-            int currentDepth = currentSearch.getRight();
-            if (currentDepth >= MAX_DEPTH) {
-                return Optional.empty();
-            }
-
+            Pair<List<State>, List<Action>> currentSearch = search.remove();
             List<State> previous_states = currentSearch.getLeft();
-            List<Action> previous_actions = currentSearch.getMiddle();
-
+            List<Action> previous_actions = currentSearch.getRight();
             State lastState = previous_states.get(previous_states.size() - 1);
+
+            // Exit loop if we've passed the depth limit
+            int currentDepth = previous_actions.size();
+            if (MAX_DEPTH > 0 && currentDepth > MAX_DEPTH) {
+               break;
+            }
 
             // If we're at the goal return
             if (Operations.satisfies(background, lastState, goal)) {
-                return Optional.of(Sets.with(
-                    new Plan(previous_actions, previous_states, background)
-                ));
+                plansFound.add(new Plan(previous_actions, previous_states, background));
+                continue;
             }
 
-            // Try to apply each action to get to the next state
-            for (Action action : actions.stream().filter(Action::isNonTrivial).collect(Collectors.toSet())) {
-                Optional<Set<Pair<State, Action>>> nextStateActionPairs = Operations.apply(background, action, lastState);
+            // Only consider non-trivial actions
+            Set<Action> nonTrivialActions = actions.stream()
+                .filter(Action::isNonTrivial)
+                .collect(Collectors.toSet());
 
-                if (nextStateActionPairs.isPresent()) {
+            // Apply the action to the state and add to the search space
+            for (Action action : nonTrivialActions) {
+                Optional<Set<Pair<State, Action>>> optNextStateActionPairs = Operations.apply(background, action, lastState);
 
-                    // Actions aren't grounded, so each nextState represents a different
-                    // paramter binding
-                    for (Pair<State, Action> stateActionPair : nextStateActionPairs.get()) {
-                        State nextState = stateActionPair.first();
-                        Action nextAction = stateActionPair.second();
+                // Ignore actions that aren't applicable
+                if (optNextStateActionPairs.isEmpty()) {
+                    continue;
+                }
 
-                        // Prune already visited states
-                        if (history.contains(nextState)) {
-                            continue;
-                        }
+                // Action's aren't grounded so each nextState represents
+                // a different parameter binding
+                Set<Pair<State, Action>> nextStateActionPairs = optNextStateActionPairs.get();
+                for (Pair<State, Action> stateActionPair: nextStateActionPairs) {
+                    State nextState = stateActionPair.getLeft();
+                    Action nextAction = stateActionPair.getRight();
 
-                        List<State> next_states = new ArrayList<State>(previous_states);
-                        next_states.add(nextState);
-
-                        List<Action> next_actions = new ArrayList<Action>(previous_actions);
-                        next_actions.add(nextAction);
-
-                        // Add new state to history and search space
-                        search.add(Triple.of(next_states, next_actions, currentDepth + 1));
-                        history.add(nextState);
+                    // Prune already visited states
+                    if (history.contains(nextState)) {
+                        continue;
                     }
+
+                    // Add to history
+                    history.add(nextState);
+
+                    // Construct search space parameters
+                    List<State> next_states = new ArrayList<State>(previous_states);
+                    next_states.add(nextState);
+
+                    List<Action> next_actions = new ArrayList<Action>(previous_actions);
+                    next_actions.add(nextAction);
+
+                    // Add to search space
+                    search.add(Pair.of(next_states, next_actions));
                 }
             }
-
         }
 
-        return Optional.empty();
+        return plansFound;
     }
 
-    @Override
-    public Optional<Set<Plan>> plan(PlanningProblem problem, Set<Formula> background, Set<Action> actions, State start, State goal) {
-        return Optional.empty();
+    public int getMaxDepth() {
+        return MAX_DEPTH;
     }
 
-
-     public Optional<Set<Plan>> plan(PlanningProblem problem, Set<Formula> background, Set<Action> actions, State start, State goal, List<PlanMethod> planMethods){
-        return Optional.empty();
+    public void setMaxDepth(int maxDepth) {
+        MAX_DEPTH = maxDepth;
     }
 
+    public void setK(int k) {
+        K = k;
+    }
 
-    public Optional<Plan> verify(Set<Formula> background, State start, State goal, PlanSketch planSketch){
-        return Optional.empty();
+    public int getK() {
+        return K;
     }
 
 }

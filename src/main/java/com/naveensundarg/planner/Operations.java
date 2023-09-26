@@ -10,10 +10,10 @@ import com.naveensundarg.shadow.prover.representations.formula.Predicate;
 import com.naveensundarg.shadow.prover.representations.value.Value;
 import com.naveensundarg.shadow.prover.representations.value.Variable;
 import com.naveensundarg.shadow.prover.utils.CollectionUtils;
-import com.naveensundarg.shadow.prover.utils.ImmutablePair;
-import com.naveensundarg.shadow.prover.utils.Pair;
 
 import com.naveensundarg.shadow.prover.utils.Sets;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.List;
@@ -52,7 +52,7 @@ public class Operations {
 
     public static synchronized Optional<Justification> proveCached(Set<Formula> assumptions, Formula goal) {
 
-        Pair<Set<Formula>, Formula> inputPair = ImmutablePair.from(assumptions, goal);
+        Pair<Set<Formula>, Formula> inputPair = ImmutablePair.of(assumptions, goal);
 
         if (proverCache.containsKey(inputPair)) {
 
@@ -62,8 +62,8 @@ public class Operations {
 
         Optional<Map.Entry<Pair<Set<Formula>, Formula>, Optional<Justification>>> cachedOptionalSuccessful = proverCache.entrySet().stream().filter(pairOptionalEntry -> {
 
-            Set<Formula> cachedAssumptions = pairOptionalEntry.getKey().first();
-            Formula cachedGoal = pairOptionalEntry.getKey().second();
+            Set<Formula> cachedAssumptions = pairOptionalEntry.getKey().getLeft();
+            Formula cachedGoal = pairOptionalEntry.getKey().getRight();
 
             return cachedGoal.equals(goal) && Sets.subset(cachedAssumptions, assumptions);
         }).findAny();
@@ -77,8 +77,8 @@ public class Operations {
 
         Optional<Map.Entry<Pair<Set<Formula>, Formula>, Optional<Justification>>> cachedOptionalFailed = proverCache.entrySet().stream().filter(pairOptionalEntry -> {
 
-            Set<Formula> cachedAssumptions = pairOptionalEntry.getKey().first();
-            Formula cachedGoal = pairOptionalEntry.getKey().second();
+            Set<Formula> cachedAssumptions = pairOptionalEntry.getKey().getLeft();
+            Formula cachedGoal = pairOptionalEntry.getKey().getRight();
 
             return cachedGoal.equals(goal) && Sets.subset(assumptions, cachedAssumptions);
         }).findAny();
@@ -249,7 +249,7 @@ public class Operations {
 
             newState = State.initializeWith(newFormulae);
 
-            nexts.add(ImmutablePair.from(newState, action.instantiate(binding)));
+            nexts.add(ImmutablePair.of(newState, action.instantiate(binding)));
 
 
         }
@@ -273,12 +273,12 @@ public class Operations {
 
             newState = State.initializeWith(newFormulae);
 
-            nexts.add(ImmutablePair.from(newState, action.instantiate(emptyBinding)));
+            nexts.add(ImmutablePair.of(newState, action.instantiate(emptyBinding)));
 
 
         }
 
-        nexts = nexts.stream().filter(n-> !n.first().getFormulae().equals(state.getFormulae())).collect(Collectors.toSet());;
+        nexts = nexts.stream().filter(n-> !n.getLeft().getFormulae().equals(state.getFormulae())).collect(Collectors.toSet());;
 
 
 
