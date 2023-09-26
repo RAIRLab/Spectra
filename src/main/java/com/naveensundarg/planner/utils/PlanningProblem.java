@@ -63,7 +63,7 @@ public class PlanningProblem {
 
     private static final Keyword EXPECTED_PLANS = Keyword.newKeyword("expected-plans");
 
-    private PlanningProblem(String name, Set<Formula> background, State start, State goal, Set<Action> actions, Set<Value> avoidIfPossible) {
+    public PlanningProblem(String name, Set<Formula> background, State start, State goal, Set<Action> actions, Set<Value> avoidIfPossible) {
 
         this.background = background;
         this.start = start;
