@@ -8,6 +8,43 @@ Spectra is a general purpose planning system. It extends STRIPS-style planning b
  * **Expressivity**: Cannot express arbitrary constraints.  *“At every step make sure that no two blocks on the table have same color”*
    * **Domain Size**: Scaling to large domains of arbitrary sizes poses difficulty. 
 
+
+## Installation
+
+First, we need to make sure ShadowProver is installed.
+
+```bash
+git clone --recursive https://github.com/RAIRLab/ShadowProver.git
+```
+
+```bash
+cd ShadowProver
+mvn package
+mvn install
+```
+
+Now, we can clone the Spectra repository.
+
+```bash
+git clone --recursive https://github.com/RAIRLab/Spectra.git
+```
+
+Similarly build and install the java project
+
+```bash
+cd Spectra
+mvn package
+mvn install
+```
+
+Now you should be able to run Spectra:
+
+```bash
+./run_spectra.sh [problem_file_path]
+```
+
+
+
 ## Spectra's Architecture ##
 
  
