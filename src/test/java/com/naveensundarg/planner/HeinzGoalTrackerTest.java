@@ -1,9 +1,9 @@
-package com.naveensundarg.planner;
+package org.rairlab.planner;
 
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
-import com.naveensundarg.planner.utils.GoalTrackingProblem;
-import com.naveensundarg.shadow.prover.utils.Reader;
+import org.rairlab.planner.utils.GoalTrackingProblem;
+import org.rairlab.shadow.prover.utils.Reader;
 
 import java.util.List;
 

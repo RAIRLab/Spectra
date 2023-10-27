@@ -1,7 +1,7 @@
-package com.naveensundarg.planner;
+package org.rairlab.planner;
 
-import com.naveensundarg.planner.utils.PlanningProblem;
-import com.naveensundarg.shadow.prover.representations.formula.Formula;
+import org.rairlab.planner.utils.PlanningProblem;
+import org.rairlab.shadow.prover.representations.formula.Formula;
 
 import java.util.Optional;
 import java.util.Set;

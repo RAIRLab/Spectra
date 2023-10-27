@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.naveensundarg</groupId>
+    <groupId>org.rairlab</groupId>
     <artifactId>planner</artifactId>
     <version>0.50</version>
 
@@ -20,7 +20,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.naveensundarg.planner.Py4JServer</mainClass>
+                                    <mainClass>org.rairlab.planner.Py4JServer</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
@@ -39,7 +39,7 @@
                             <archive>
                                 <manifest>
                                     <addClasspath>true</addClasspath>
-                                    <mainClass>com.naveensundarg.planner.Py4JServer</mainClass>
+                                    <mainClass>org.rairlab.planner.Py4JServer</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
@@ -61,7 +61,7 @@
 
 
         <dependency>
-            <groupId>com.naveensundarg</groupId>
+            <groupId>org.rairlab</groupId>
             <artifactId>prover</artifactId>
             <version>1.40</version>
         </dependency>

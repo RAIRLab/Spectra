@@ -1,22 +1,22 @@
-package com.naveensundarg.planner.utils;
+package org.rairlab.planner.utils;
 
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
-import com.naveensundarg.planner.*;
-import com.naveensundarg.shadow.prover.representations.formula.Predicate;
+import org.rairlab.planner.*;
+import org.rairlab.shadow.prover.representations.formula.Predicate;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.naveensundarg.shadow.prover.utils.Reader.readFormulaFromString;
+import static org.rairlab.shadow.prover.utils.Reader.readFormulaFromString;
 
 /**
  * Created by naveensundarg on 12/22/17.
  */
 public class Sandbox {
 
-    public static void demoPlanMethods(String[] args) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
+    public static void demoPlanMethods(String[] args) throws org.rairlab.shadow.prover.utils.Reader.ParsingException {
 
         PlanMethod seriatedPlanMethod = (Reader.readPlanMethodsFrom(Sandbox.class.getResourceAsStream("../problems/learning/dry.clj"))).get(0);
 
@@ -48,7 +48,7 @@ public class Sandbox {
     static ColoredPrinter cp = new ColoredPrinter.Builder(1, false).build();
 
 
-    public static void main(String[] args) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
+    public static void main(String[] args) throws org.rairlab.shadow.prover.utils.Reader.ParsingException {
 
 
 

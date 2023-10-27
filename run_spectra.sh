@@ -19,7 +19,7 @@ if ! command -v mvn > /dev/null; then
 fi
 
 
-mvn -q exec:java -Dexec.mainClass="com.naveensundarg.planner.utils.Runner" -Dexec.args="$1"
+mvn -q exec:java -Dexec.mainClass="org.rairlab.planner.utils.Runner" -Dexec.args="$1"
 
-#mvn exec:java -Dexec.mainClass="com.naveensundarg.planner.utils.Runner" -Dexec.args="$PWD/src/main/resources/com/naveensundarg/planner/problems/ai2thor/FloorPlan28.clj"
+#mvn exec:java -Dexec.mainClass="org.rairlab.planner.utils.Runner" -Dexec.args="$PWD/src/main/resources/com/naveensundarg/planner/problems/ai2thor/FloorPlan28.clj"
 

@@ -1,12 +1,12 @@
-package com.naveensundarg.planner;
+package org.rairlab.planner;
 
-import com.naveensundarg.planner.utils.Commons;
-import com.naveensundarg.planner.utils.PlanningProblem;
-import com.naveensundarg.planner.utils.Visualizer;
-import com.naveensundarg.shadow.prover.core.proof.Justification;
-import com.naveensundarg.shadow.prover.representations.formula.Formula;
-import com.naveensundarg.shadow.prover.utils.CollectionUtils;
-import com.naveensundarg.shadow.prover.utils.Sets;
+import org.rairlab.planner.utils.Commons;
+import org.rairlab.planner.utils.PlanningProblem;
+import org.rairlab.planner.utils.Visualizer;
+import org.rairlab.shadow.prover.core.proof.Justification;
+import org.rairlab.shadow.prover.representations.formula.Formula;
+import org.rairlab.shadow.prover.utils.CollectionUtils;
+import org.rairlab.shadow.prover.utils.Sets;
 
 import org.apache.commons.lang3.tuple.Pair;
 

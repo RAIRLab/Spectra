@@ -1,6 +1,6 @@
-package com.naveensundarg.planner;
+package org.rairlab.planner;
 
-import com.naveensundarg.shadow.prover.representations.formula.Formula;
+import org.rairlab.shadow.prover.representations.formula.Formula;
 
 import java.util.*;
 import java.util.stream.Collectors;

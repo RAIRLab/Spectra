@@ -1,11 +1,11 @@
-package com.naveensundarg.planner.utils;
+package org.rairlab.planner.utils;
 
 import com.diogonunes.jcdp.color.ColoredPrinter;
-import com.naveensundarg.planner.DepthFirstPlanner;
-import com.naveensundarg.planner.GoalTracker;
-import com.naveensundarg.planner.Plan;
-import com.naveensundarg.planner.Planner;
-import com.naveensundarg.shadow.prover.utils.Reader;
+import org.rairlab.planner.DepthFirstPlanner;
+import org.rairlab.planner.GoalTracker;
+import org.rairlab.planner.Plan;
+import org.rairlab.planner.Planner;
+import org.rairlab.shadow.prover.utils.Reader;
  import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;

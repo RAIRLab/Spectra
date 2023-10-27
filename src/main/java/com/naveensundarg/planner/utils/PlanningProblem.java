@@ -1,15 +1,15 @@
-package com.naveensundarg.planner.utils;
+package org.rairlab.planner.utils;
 
-import com.naveensundarg.planner.Context;
-import com.naveensundarg.shadow.prover.representations.formula.Formula;
-import com.naveensundarg.shadow.prover.representations.value.Value;
-import com.naveensundarg.shadow.prover.representations.value.Variable;
-import com.naveensundarg.shadow.prover.utils.CollectionUtils;
-import com.naveensundarg.shadow.prover.utils.Reader;
-import com.naveensundarg.shadow.prover.utils.Sets;
-import com.naveensundarg.planner.Action;
-import com.naveensundarg.planner.PlanMethod;
-import com.naveensundarg.planner.State;
+import org.rairlab.planner.Context;
+import org.rairlab.shadow.prover.representations.formula.Formula;
+import org.rairlab.shadow.prover.representations.value.Value;
+import org.rairlab.shadow.prover.representations.value.Variable;
+import org.rairlab.shadow.prover.utils.CollectionUtils;
+import org.rairlab.shadow.prover.utils.Reader;
+import org.rairlab.shadow.prover.utils.Sets;
+import org.rairlab.planner.Action;
+import org.rairlab.planner.PlanMethod;
+import org.rairlab.planner.State;
 import us.bpsm.edn.Keyword;
 import us.bpsm.edn.Symbol;
 import us.bpsm.edn.parser.Parseable;
@@ -23,7 +23,7 @@ import java.io.StringReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.naveensundarg.planner.utils.Reader.readPlanMethodFrom;
+import static org.rairlab.planner.utils.Reader.readPlanMethodFrom;
 
 /**
  * Created by naveensundarg on 1/13/17.

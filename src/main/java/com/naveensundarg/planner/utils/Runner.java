@@ -1,9 +1,9 @@
-package com.naveensundarg.planner.utils;
+package org.rairlab.planner.utils;
 
-import com.naveensundarg.planner.BreadthFirstPlanner;
-import com.naveensundarg.planner.Plan;
-import com.naveensundarg.planner.Planner;
-import com.naveensundarg.shadow.prover.utils.Reader;
+import org.rairlab.planner.BreadthFirstPlanner;
+import org.rairlab.planner.Plan;
+import org.rairlab.planner.Planner;
+import org.rairlab.shadow.prover.utils.Reader;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

@@ -1,13 +1,13 @@
-package com.naveensundarg.planner.inducers;
+package org.rairlab.planner.inducers;
 
-import com.naveensundarg.planner.*;
-import com.naveensundarg.planner.utils.Commons;
-import com.naveensundarg.planner.utils.PlanningProblem;
-import com.naveensundarg.shadow.prover.representations.formula.Formula;
-import com.naveensundarg.shadow.prover.representations.value.Compound;
-import com.naveensundarg.shadow.prover.representations.value.Value;
-import com.naveensundarg.shadow.prover.representations.value.Variable;
-import com.naveensundarg.shadow.prover.utils.Sets;
+import org.rairlab.planner.*;
+import org.rairlab.planner.utils.Commons;
+import org.rairlab.planner.utils.PlanningProblem;
+import org.rairlab.shadow.prover.representations.formula.Formula;
+import org.rairlab.shadow.prover.representations.value.Compound;
+import org.rairlab.shadow.prover.representations.value.Value;
+import org.rairlab.shadow.prover.representations.value.Variable;
+import org.rairlab.shadow.prover.utils.Sets;
 
 import java.util.*;
 import java.util.function.Function;

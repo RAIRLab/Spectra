@@ -1,16 +1,16 @@
-package com.naveensundarg.planner.utils;
+package org.rairlab.planner.utils;
 
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
 import com.google.common.collect.Sets;
-import com.naveensundarg.planner.Goal;
-import com.naveensundarg.planner.GoalTracker;
-import com.naveensundarg.planner.Inducer;
-import com.naveensundarg.planner.Plan;
-import com.naveensundarg.shadow.prover.core.Prover;
-import com.naveensundarg.shadow.prover.core.SnarkWrapper;
-import com.naveensundarg.shadow.prover.utils.Reader;
- import com.naveensundarg.planner.inducers.SimpleInducer;
+import org.rairlab.planner.Goal;
+import org.rairlab.planner.GoalTracker;
+import org.rairlab.planner.Inducer;
+import org.rairlab.planner.Plan;
+import org.rairlab.shadow.prover.core.Prover;
+import org.rairlab.shadow.prover.core.SnarkWrapper;
+import org.rairlab.shadow.prover.utils.Reader;
+ import org.rairlab.planner.inducers.SimpleInducer;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.*;

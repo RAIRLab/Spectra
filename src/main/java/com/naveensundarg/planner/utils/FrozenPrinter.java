@@ -1,4 +1,4 @@
-package com.naveensundarg.planner.utils;
+package org.rairlab.planner.utils;
 
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.AbstractColoredPrinter;

@@ -1,10 +1,10 @@
-package com.naveensundarg.planner.utils;
+package org.rairlab.planner.utils;
 
-import com.naveensundarg.shadow.prover.representations.formula.Formula;
-import com.naveensundarg.shadow.prover.representations.value.Compound;
-import com.naveensundarg.shadow.prover.representations.value.Variable;
-import com.naveensundarg.shadow.prover.utils.CollectionUtils;
-import com.naveensundarg.planner.PlanMethod;
+import org.rairlab.shadow.prover.representations.formula.Formula;
+import org.rairlab.shadow.prover.representations.value.Compound;
+import org.rairlab.shadow.prover.representations.value.Variable;
+import org.rairlab.shadow.prover.utils.CollectionUtils;
+import org.rairlab.planner.PlanMethod;
 import us.bpsm.edn.Keyword;
 import us.bpsm.edn.Symbol;
 import us.bpsm.edn.parser.Parseable;
@@ -25,7 +25,7 @@ public class Reader {
     private static final Keyword ACTIONS = Keyword.newKeyword("actions");
     private static final Keyword WHILE = Keyword.newKeyword("while");
 
-    public static List<PlanMethod> readPlanMethodsFrom(InputStream inputStream) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
+    public static List<PlanMethod> readPlanMethodsFrom(InputStream inputStream) throws org.rairlab.shadow.prover.utils.Reader.ParsingException {
 
         Parseable parseable = Parsers.newParseable(new InputStreamReader(inputStream));
         Parser parser = Parsers.newParser(Parsers.defaultConfiguration());
@@ -47,7 +47,7 @@ public class Reader {
 
 
     // (def planMethod [?x ?y ?z] {:goal [...] :action [....])
-    public static PlanMethod readPlanMethodFromString(String stringSpec) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
+    public static PlanMethod readPlanMethodFromString(String stringSpec) throws org.rairlab.shadow.prover.utils.Reader.ParsingException {
 
         Parseable parseable = Parsers.newParseable(new StringReader(stringSpec));
         Parser parser = Parsers.newParser(Parsers.defaultConfiguration());
@@ -57,7 +57,7 @@ public class Reader {
     }
 
     // (def planMethod [?x ?y ?z] {:goal [...] :action [....])
-    public static PlanMethod readPlanMethodFrom(List<?> planMethodSpec) throws com.naveensundarg.shadow.prover.utils.Reader.ParsingException {
+    public static PlanMethod readPlanMethodFrom(List<?> planMethodSpec) throws org.rairlab.shadow.prover.utils.Reader.ParsingException {
 
         Object  command = planMethodSpec.get(0);
 
@@ -70,7 +70,7 @@ public class Reader {
         List<Variable> variables = CollectionUtils.newEmptyList();
         for(Symbol varSym : variableObjs){
 
-            variables.add((Variable) com.naveensundarg.shadow.prover.utils.Reader.readLogicValueFromString(varSym.toString()));
+            variables.add((Variable) org.rairlab.shadow.prover.utils.Reader.readLogicValueFromString(varSym.toString()));
 
         }
 
@@ -85,7 +85,7 @@ public class Reader {
 
         for(Object goalPrecondSpec : goalPrecondSpecs){
 
-            goalPreconds.add(com.naveensundarg.shadow.prover.utils.Reader.readFormula(goalPrecondSpec));
+            goalPreconds.add(org.rairlab.shadow.prover.utils.Reader.readFormula(goalPrecondSpec));
         }
 
 
@@ -93,7 +93,7 @@ public class Reader {
 
         for(Object whilePrecondSpec : whilePrecondSpecs){
 
-            whilePreconds.add(com.naveensundarg.shadow.prover.utils.Reader.readFormula(whilePrecondSpec));
+            whilePreconds.add(org.rairlab.shadow.prover.utils.Reader.readFormula(whilePrecondSpec));
         }
 
 
@@ -102,7 +102,7 @@ public class Reader {
 
         for(Object actionPrecondSpec : actionPrecondSpecs){
 
-            actionCompounds.add((Compound) com.naveensundarg.shadow.prover.utils.Reader.readLogicValue(actionPrecondSpec));
+            actionCompounds.add((Compound) org.rairlab.shadow.prover.utils.Reader.readLogicValue(actionPrecondSpec));
         }
 
         return new PlanMethod(goalPreconds, whilePreconds, variables, actionCompounds);

@@ -1,4 +1,4 @@
-package com.naveensundarg.planner;
+package org.rairlab.planner;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
