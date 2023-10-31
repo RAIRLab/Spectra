@@ -156,21 +156,23 @@ public class Action {
 
     public Action instantiate(Map<Variable, Value> binding){
 
+        // Apply binding to precondition, additions, and deletions
         Set<Formula> newPreconditions = preconditions.stream().map(x->x.apply(binding)).collect(Collectors.toSet());
         Set<Formula> newAdditions = additions.stream().map(x->x.apply(binding)).collect(Collectors.toSet());
         Set<Formula> newDeletions = deletions.stream().map(x->x.apply(binding)).collect(Collectors.toSet());
 
-        List<Variable> newFreeVraibles = CollectionUtils.newEmptyList();
+        // Allow for partial instantiation, grab variables that aren't
+        List<Variable> newFreeVariables = CollectionUtils.newEmptyList();
         for(Variable var: freeVariables){
 
             if(!binding.keySet().contains(var)){
-                newFreeVraibles.add(var);
+                newFreeVariables.add(var);
             }
         }
 
         List<Value> valuesList = interestedVars.stream().collect(Collectors.toList());;
         Compound shorthand = (Compound)(new Compound(name, valuesList)).apply(binding);
-        return new Action(name, newPreconditions, newAdditions, newDeletions, newFreeVraibles, shorthand);
+        return new Action(name, newPreconditions, newAdditions, newDeletions, newFreeVariables, shorthand);
     }
 
     public String getName() {
@@ -183,13 +185,16 @@ public class Action {
 
     public boolean computeTrivialOrNot(){
 
+        // All the additions are already in the preconditions and nothing gets deleted
         boolean case1Trivial =  Sets.subset(additions, preconditions) && deletions.isEmpty();
 
+        // There are no additions and the deletes that are there are already negated in the precondition so they don't exist.
         boolean case2Trivial =  additions.isEmpty() && deletions.stream().allMatch(x->preconditions.stream().anyMatch(y->y.equals(Logic.negated(x))));
 
-        boolean trivial = case1Trivial || case2Trivial;
+        // All additions are already in preconditions and the deletions are negated in the preconditions
+        boolean case3Trivial = Sets.subset(additions, preconditions) && deletions.stream().allMatch(x->preconditions.stream().anyMatch(y->y.equals(Logic.negated(x))));
 
-        return trivial;
+        return case1Trivial || case2Trivial || case3Trivial;
     }
 
     public Compound getShorthand() {
