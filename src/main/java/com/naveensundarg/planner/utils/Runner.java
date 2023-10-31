@@ -45,6 +45,7 @@ public final class Runner {
         }
         
         BreadthFirstPlanner breadthFirstPlanner = new BreadthFirstPlanner();
+        breadthFirstPlanner.setK(2);
 
         for (PlanningProblem planningProblem : planningProblemList) {
             Set<Plan> plans = breadthFirstPlanner.plan(
