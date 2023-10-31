@@ -13,9 +13,9 @@ import org.apache.commons.lang3.tuple.Pair;
 public class BreadthFirstPlanner {
 
     // The longest plan to search for, -1 means no bound
-    private int MAX_DEPTH = -1;
+    private Optional<Integer> MAX_DEPTH = Optional.empty();
     // Number of plans to look for, -1 means up to max_depth
-    private int K = -1;
+    private Optional<Integer> K = Optional.empty();
 
     public BreadthFirstPlanner(){ }
 
@@ -37,7 +37,7 @@ public class BreadthFirstPlanner {
         // - No more actions can be applied
         // - Max depth reached
         // - Found K plans
-        while (!search.isEmpty() && !(K > 0 && plansFound.size() >= K)) {
+        while (!search.isEmpty()) {
 
             Pair<List<State>, List<Action>> currentSearch = search.remove();
             List<State> previous_states = currentSearch.getLeft();
@@ -46,13 +46,16 @@ public class BreadthFirstPlanner {
 
             // Exit loop if we've passed the depth limit
             int currentDepth = previous_actions.size();
-            if (MAX_DEPTH > 0 && currentDepth > MAX_DEPTH) {
+            if (MAX_DEPTH.isPresent() && currentDepth > MAX_DEPTH.get()) {
                break;
             }
 
             // If we're at the goal return
             if (Operations.satisfies(background, lastState, goal)) {
                 plansFound.add(new Plan(previous_actions, previous_states, background));
+                if (K.isPresent() && plansFound.size() >= K.get()) {
+                    break;
+                }
                 continue;
             }
 
@@ -101,19 +104,23 @@ public class BreadthFirstPlanner {
         return plansFound;
     }
 
-    public int getMaxDepth() {
+    public Optional<Integer> getMaxDepth() {
         return MAX_DEPTH;
     }
 
     public void setMaxDepth(int maxDepth) {
-        MAX_DEPTH = maxDepth;
+        MAX_DEPTH = Optional.of(maxDepth);
     }
 
     public void setK(int k) {
-        K = k;
+        K = Optional.of(k);
     }
 
-    public int getK() {
+    public void clearK() {
+        K = Optional.empty();
+    }
+
+    public Optional<Integer> getK() {
         return K;
     }
 
