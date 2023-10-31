@@ -163,9 +163,8 @@ public class Operations {
 
     public static Optional<Set<Pair<State, Action>>> apply(Set<Formula> background, Action action, State state) {
 
-
+        // Get resulting states from cache if computed before
         if(applyCache.containsKey(Triple.of(background, action, state))){
-
             Optional<Set<Pair<State, Action>>>  ans  = applyCache.get(Triple.of(background, action, state));
             if(ans.isPresent()){
                 return applyCache.get(Triple.of(background, action, state));
@@ -173,87 +172,46 @@ public class Operations {
             }
         }
 
+        // Ask theorem prover for witnesses that satisfy the precondition
         Set<Formula> givens = Sets.union(background, state.getFormulae());
-
         Optional<Set<Map<Variable, Value>>> bindingsOpt = proveAndGetBindingsCached(givens, action.getPrecondition(), action.openVars());
 
-        State newState;
-
+        // If not witnesses found, return nothing
         if (!bindingsOpt.isPresent()) {
-
-
-
-            applyCache.put(Triple.of(background, action ,state), Optional.empty());
+            applyCache.put(Triple.of(background, action, state), Optional.empty());
             return Optional.empty();
 
         }
 
         Visualizer.nested(action.getName());
+        Set<Pair<State, Action>> nextStates = Sets.newSet();
 
-        Set<Pair<State, Action>> nexts = Sets.newSet();
         for (Map<Variable, Value> binding : bindingsOpt.get()) {
 
             if (THROW_AWAY_EMPTY_BINDINGS && binding.values().stream().anyMatch(x -> x instanceof Variable)) {
-
                 continue;
             }
 
-            Set<Formula> instantiatedDeletions = action.instantiateDeletions(binding);
+            // Apply binding to get grounded action and calculate the next state
+            // newState = (oldState - Deletions(a)) U Additions(a)
+            Action groundedAction = action.instantiate(binding);
+            State newState = State.initializeWith(Sets.union(
+                Sets.difference(state.getFormulae(), groundedAction.getDeletions()),
+                groundedAction.getAdditions()
+            ));
 
-            Set<Formula> formulaeToRemove = state.getFormulae().stream().
-                    filter(f -> instantiatedDeletions.stream().anyMatch(d -> equivalent(Sets.union(background, state.getFormulae()), f, d))).collect(Collectors.toSet());
-
-            Set<Formula> newFormulae = Sets.union(background, state.getFormulae());
-
-            newFormulae = Sets.union(newFormulae, action.instantiateAdditions(binding).stream().map(Simplifier::simplify).collect(Collectors.toSet()));
-
-
-            newFormulae = Sets.difference(newFormulae, formulaeToRemove);
-
-
-            newState = State.initializeWith(newFormulae);
-
-            nexts.add(ImmutablePair.of(newState, action.instantiate(binding)));
-
-
+            // If the state progresses, record it as a possible next state
+            if (!newState.equals(state)) {
+                nextStates.add(ImmutablePair.of(newState, groundedAction));
+            }
         }
 
-
-        if (nexts.isEmpty()) {
-
-            Map<Variable, Value> emptyBinding = CollectionUtils.newMap();
-            Set<Formula> instantiatedDeletions = action.instantiateDeletions(emptyBinding);
-
-            Set<Formula> formulaeToRemove = state.getFormulae().stream().
-                    filter(f -> instantiatedDeletions.stream().anyMatch(d -> equivalent(background, f, d))).collect(Collectors.toSet());
-
-            Set<Formula> newFormulae = state.getFormulae();
-
-            newFormulae = Sets.union(newFormulae, action.instantiateAdditions(emptyBinding));
-
-
-            newFormulae = Sets.difference(newFormulae, formulaeToRemove);
-
-
-            newState = State.initializeWith(newFormulae);
-
-            nexts.add(ImmutablePair.of(newState, action.instantiate(emptyBinding)));
-
-
-        }
-
-        nexts = nexts.stream().filter(n-> !n.getLeft().getFormulae().equals(state.getFormulae())).collect(Collectors.toSet());;
-
-
-
-        applyCache.put(Triple.of(background, action ,state), Optional.of(nexts));
-
-        return Optional.of(nexts);
+        applyCache.put(Triple.of(background, action, state), Optional.of(nextStates));
+        return Optional.of(nextStates);
 
     }
 
     public static boolean equivalent(Set<Formula> background, Formula f1, Formula f2) {
-
         if (!DEEP_EQUIVALENCE) {
             return f1.equals(f2);
         }
@@ -263,7 +221,6 @@ public class Operations {
     }
 
     public static boolean satisfies(Set<Formula> background, State state, State goal) {
-
         if ((Sets.union(background, state.getFormulae()).containsAll(goal.getFormulae()))) {
             return true;
         }
@@ -272,16 +229,13 @@ public class Operations {
             Sets.union(background, state.getFormulae()),
             Commons.makeAnd(goal.getFormulae())
         ).isPresent();
-
     }
 
     public static boolean conflicts(Set<Formula> background, State state1, State state2) {
-
         return proveCached(
             Sets.union(background, Sets.union(state1.getFormulae(), state2.getFormulae())),
             State.FALSE
         ).isPresent();
-
     }
 
 }
