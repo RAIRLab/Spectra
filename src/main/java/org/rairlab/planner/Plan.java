@@ -28,6 +28,12 @@ public class Plan {
         this.background = background;
     }
 
+    public Plan(List<Action> actions) {
+        this.actions = actions;
+        this.expectedStates = CollectionUtils.newEmptyList();
+        this.background = CollectionUtils.newEmptySet();
+    }
+
     public List<Action> getActions() {
         return actions;
     }

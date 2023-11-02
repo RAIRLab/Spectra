@@ -58,6 +58,7 @@ public class PlanningProblem {
     private static final Keyword PRECONDITIONS = Keyword.newKeyword("preconditions");
     private static final Keyword ADDITIONS = Keyword.newKeyword("additions");
     private static final Keyword DELETIONS = Keyword.newKeyword("deletions");
+    private static final Keyword COST = Keyword.newKeyword("cost");
 
     private static final Symbol ACTION_DEFINER = Symbol.newSymbol("define-action");
 
@@ -311,11 +312,17 @@ public class PlanningProblem {
                 Set<Formula> preconditions = readFrom((List<?>) actionSpec.get(PRECONDITIONS));
                 Set<Formula> additions = readFrom((List<?>) actionSpec.get(ADDITIONS));
                 Set<Formula> deletions = readFrom((List<?>) actionSpec.get(DELETIONS));
+                int cost;
+                if (actionSpec.containsKey(COST)) {
+                    cost = Integer.parseInt(actionSpec.get(COST).toString());
+                } else {
+                    cost = 1;
+                }
 
                 List<Variable> interestedVars = CollectionUtils.newEmptyList();
                 interestedVars.addAll(vars);
                 vars.addAll(preconditions.stream().map(Formula::variablesPresent).reduce(Sets.newSet(), Sets::union));
-                return Action.buildActionFrom(name, preconditions, additions, deletions, vars, interestedVars);
+                return Action.buildActionFrom(name, preconditions, additions, deletions, cost, vars, interestedVars);
 
 
             } catch (Reader.ParsingException e) {

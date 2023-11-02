@@ -1,13 +1,14 @@
 package org.rairlab.planner.utils;
 
-import org.rairlab.planner.BreadthFirstPlanner;
+import org.rairlab.planner.AStarPlanner;
 import org.rairlab.planner.Plan;
-import org.rairlab.planner.Planner;
+import org.rairlab.planner.heuristics.ConstantHeuristic;
 import org.rairlab.shadow.prover.utils.Reader;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
+
 
 
 public final class Runner {
@@ -43,16 +44,19 @@ public final class Runner {
             e.printStackTrace();
             return;
         }
-        
-        BreadthFirstPlanner breadthFirstPlanner = new BreadthFirstPlanner();
-        breadthFirstPlanner.setK(2);
+
+        AStarPlanner astarplanner = new AStarPlanner();
+        astarplanner.setK(2);
 
         for (PlanningProblem planningProblem : planningProblemList) {
-            Set<Plan> plans = breadthFirstPlanner.plan(
+
+            Set<Plan> plans = astarplanner.plan(
                 planningProblem.getBackground(),
                 planningProblem.getActions(),
                 planningProblem.getStart(),
-                planningProblem.getGoal());
+                planningProblem.getGoal(),
+                ConstantHeuristic::h
+            );
 
             if(plans.size() > 0) {
                 System.out.println(plans.toString());

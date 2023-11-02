@@ -4,10 +4,8 @@ import org.rairlab.planner.utils.Visualizer;
 import org.rairlab.shadow.prover.core.Prover;
 import org.rairlab.shadow.prover.core.SnarkWrapper;
 import org.rairlab.shadow.prover.core.proof.Justification;
-import org.rairlab.planner.utils.Commons;
 import org.rairlab.shadow.prover.representations.formula.BiConditional;
 import org.rairlab.shadow.prover.representations.formula.Formula;
-import org.rairlab.shadow.prover.representations.formula.Predicate;
 
 import org.rairlab.shadow.prover.representations.value.Value;
 import org.rairlab.shadow.prover.representations.value.Variable;
@@ -23,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by naveensundarg on 1/13/17.
@@ -225,10 +222,17 @@ public class Operations {
             return true;
         }
 
-        return proveCached(
-            Sets.union(background, state.getFormulae()),
-            Commons.makeAnd(goal.getFormulae())
-        ).isPresent();
+        for (Formula g : goal.getFormulae()) {
+            Optional<Justification> just = proveCached(
+                Sets.union(background, state.getFormulae()),
+                g
+            );
+            if (just.isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static boolean conflicts(Set<Formula> background, State state1, State state2) {

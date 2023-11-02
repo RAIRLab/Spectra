@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 /**
  * Created by naveensundarg on 1/13/17.
@@ -28,12 +29,13 @@ public class Action {
     private final String name;
     private final Formula precondition;
 
+    private int cost;
     private int weight;
     private final boolean  trivial;
 
     private final Compound shorthand;
 
-    public Action(String name, Set<Formula> preconditions, Set<Formula> additions, Set<Formula> deletions, List<Variable> freeVariables, List<Variable> interestedVars) {
+    public Action(String name, Set<Formula> preconditions, Set<Formula> additions, Set<Formula> deletions, int cost, List<Variable> freeVariables, List<Variable> interestedVars) {
         this.name = name;
         this.preconditions = preconditions;
 
@@ -52,6 +54,7 @@ public class Action {
         this.weight = preconditions.stream().mapToInt(Formula::getWeight).sum() +
                 additions.stream().mapToInt(Formula::getWeight).sum() +
                 deletions.stream().mapToInt(Formula::getWeight).sum();
+        this.cost = cost;
 
         List<Value> valuesList = interestedVars.stream().collect(Collectors.toList());;
         this.shorthand = new Compound(name, valuesList);
@@ -61,7 +64,7 @@ public class Action {
     }
 
     public Action(String name, Set<Formula> preconditions, Set<Formula> additions,
-                   Set<Formula> deletions, List<Variable> freeVariables,
+                   Set<Formula> deletions, int cost, List<Variable> freeVariables,
                    Compound shorthand
     ) {
         this.name = name;
@@ -82,6 +85,7 @@ public class Action {
         this.weight = preconditions.stream().mapToInt(Formula::getWeight).sum() +
                 additions.stream().mapToInt(Formula::getWeight).sum() +
                 deletions.stream().mapToInt(Formula::getWeight).sum();
+        this.cost = cost;
 
         this.shorthand = shorthand;
         this.trivial = computeTrivialOrNot();
@@ -94,9 +98,10 @@ public class Action {
                                          Set<Formula> preconditions,
                                          Set<Formula> additions,
                                          Set<Formula> deletions,
+                                         int cost,
                                          List<Variable> freeVariables) {
 
-        return new Action(name, preconditions, additions, deletions, freeVariables, freeVariables);
+        return new Action(name, preconditions, additions, deletions, cost, freeVariables, freeVariables);
 
     }
 
@@ -104,14 +109,19 @@ public class Action {
                                          Set<Formula> preconditions,
                                          Set<Formula> additions,
                                          Set<Formula> deletions,
+                                         int cost,
                                          List<Variable> freeVariables, List<Variable> interestedVars) {
 
-        return new Action(name, preconditions, additions, deletions, freeVariables, interestedVars);
+        return new Action(name, preconditions, additions, deletions, cost, freeVariables, interestedVars);
 
     }
 
     public int getWeight() {
         return weight;
+    }
+
+    public int getCost() {
+        return cost;
     }
 
     public Formula getPrecondition() {
@@ -131,16 +141,11 @@ public class Action {
     }
 
     public List<Variable> openVars() {
+        return freeVariables;
+    }
 
-        Set<Variable> variables = Sets.newSet();
-
-        variables.addAll(freeVariables);
-
-        List<Variable> variablesList = CollectionUtils.newEmptyList();
-
-        variablesList.addAll(variables);
-        return variablesList;
-
+    public List<Variable> getInterestedVars() {
+        return interestedVars;
     }
 
     public Set<Formula> instantiateAdditions(Map<Variable, Value> mapping) {
@@ -172,7 +177,7 @@ public class Action {
 
         List<Value> valuesList = interestedVars.stream().collect(Collectors.toList());;
         Compound shorthand = (Compound)(new Compound(name, valuesList)).apply(binding);
-        return new Action(name, newPreconditions, newAdditions, newDeletions, newFreeVariables, shorthand);
+        return new Action(name, newPreconditions, newAdditions, newDeletions, cost, newFreeVariables, shorthand);
     }
 
     public String getName() {
