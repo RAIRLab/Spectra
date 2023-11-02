@@ -4,6 +4,7 @@ import org.rairlab.planner.utils.PlanningProblem;
 import org.rairlab.shadow.prover.representations.formula.Formula;
 import org.rairlab.shadow.prover.utils.CollectionUtils;
 import org.rairlab.shadow.prover.utils.Sets;
+import org.rairlab.planner.search.DepthFirstPlanner;
 
 import java.util.Comparator;
 import java.util.Optional;

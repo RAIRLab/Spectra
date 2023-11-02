@@ -1,8 +1,10 @@
-package org.rairlab.planner;
+package org.rairlab.planner.search;
 
 import org.rairlab.planner.utils.Commons;
 import org.rairlab.planner.utils.PlanningProblem;
 import org.rairlab.planner.utils.Visualizer;
+import org.rairlab.planner.*;
+
 import org.rairlab.shadow.prover.core.proof.Justification;
 import org.rairlab.shadow.prover.representations.formula.Formula;
 import org.rairlab.shadow.prover.utils.CollectionUtils;

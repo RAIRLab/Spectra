@@ -1,11 +1,9 @@
 package org.rairlab.planner;
 
 import org.rairlab.planner.utils.PlanningProblem;
-import org.rairlab.shadow.prover.core.ccprovers.CognitiveCalculusProver;
-import org.rairlab.shadow.prover.core.proof.Justification;
-import org.rairlab.shadow.prover.representations.formula.Formula;
-import org.rairlab.shadow.prover.utils.Problem;
-import org.rairlab.shadow.prover.utils.ProblemReader;
+import org.rairlab.planner.heuristics.ConstantHeuristic;
+import org.rairlab.planner.search.AStarPlanner;
+
 import org.rairlab.shadow.prover.utils.Reader;
 import py4j.GatewayServer;
 
@@ -14,24 +12,20 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public final class Py4JServer {
 
-
-    private DepthFirstPlanner depthFirstPlanner;
+    private AStarPlanner astarplanner;
 
 
     public Py4JServer(){
-
-        depthFirstPlanner = new DepthFirstPlanner();
-
+        astarplanner = new AStarPlanner();
     }
 
 
-    public Planner getPlanner(){
-        return depthFirstPlanner;
+    public AStarPlanner getPlanner(){
+        return astarplanner;
     }
 
     public static void main(String[] args) throws UnknownHostException {
@@ -49,29 +43,26 @@ public final class Py4JServer {
 
     }
 
-    public ArrayList newEmptyList(){
-
-        return new ArrayList();
-    }
-
     public String proveFromDescription(String fileString){
         try {
 
             List<PlanningProblem> planningProblemList = (PlanningProblem.readFromFile(new ByteArrayInputStream(fileString.getBytes())));
 
-            Planner depthFirstPlanner = new DepthFirstPlanner();
+            AStarPlanner astarplanner = new AStarPlanner();
 
             PlanningProblem planningProblem = planningProblemList.get(0);
 
 
-            Optional<Set<Plan>> optionalPlans = depthFirstPlanner.plan(
+            Set<Plan> plans = astarplanner.plan(
                     planningProblem.getBackground(),
                     planningProblem.getActions(),
                     planningProblem.getStart(),
-                    planningProblem.getGoal());
+                    planningProblem.getGoal(),
+                    ConstantHeuristic::h
+            );
 
-            if(optionalPlans.isPresent()) {
-                return optionalPlans.get().toString();
+            if(plans.size() > 0) {
+                return plans.toString();
             }
             else {
                 return "FAILED";

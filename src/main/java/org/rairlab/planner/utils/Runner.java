@@ -1,6 +1,6 @@
 package org.rairlab.planner.utils;
 
-import org.rairlab.planner.AStarPlanner;
+import org.rairlab.planner.search.AStarPlanner;
 import org.rairlab.planner.Plan;
 import org.rairlab.planner.heuristics.ConstantHeuristic;
 import org.rairlab.shadow.prover.utils.Reader;

@@ -1,7 +1,7 @@
 package org.rairlab.planner.utils;
 
 import com.diogonunes.jcdp.color.ColoredPrinter;
-import org.rairlab.planner.DepthFirstPlanner;
+import org.rairlab.planner.search.DepthFirstPlanner;
 import org.rairlab.planner.GoalTracker;
 import org.rairlab.planner.Plan;
 import org.rairlab.planner.Planner;

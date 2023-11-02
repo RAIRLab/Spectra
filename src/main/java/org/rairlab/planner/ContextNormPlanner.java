@@ -2,6 +2,7 @@ package org.rairlab.planner;
 
 import org.rairlab.planner.utils.PlanningProblem;
 import org.rairlab.shadow.prover.representations.formula.Formula;
+import org.rairlab.planner.search.DepthFirstPlanner;
 
 import java.util.Optional;
 import java.util.Set;

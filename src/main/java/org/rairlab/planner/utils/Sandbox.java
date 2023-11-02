@@ -3,13 +3,12 @@ package org.rairlab.planner.utils;
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
 import org.rairlab.planner.*;
-import org.rairlab.shadow.prover.representations.formula.Predicate;
+import org.rairlab.planner.search.DepthFirstPlanner;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.rairlab.shadow.prover.utils.Reader.readFormulaFromString;
 
 /**
  * Created by naveensundarg on 12/22/17.

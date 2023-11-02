@@ -1,6 +1,11 @@
-package org.rairlab.planner;
+package org.rairlab.planner.search;
 
 import org.rairlab.shadow.prover.representations.formula.Formula;
+
+import org.rairlab.planner.State;
+import org.rairlab.planner.Action;
+import org.rairlab.planner.Plan;
+import org.rairlab.planner.Operations;
 
 import java.util.*;
 import java.util.function.Function;
