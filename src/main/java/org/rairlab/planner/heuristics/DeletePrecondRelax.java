@@ -22,8 +22,8 @@ import java.util.Optional;
  * I think in this case, we keep it as free variables.
  * (Gotta make sure it's fresh and distinct wrt to the other formulae)
  *
- * Then for the goal condition check we see if the two
- * formulas "unify" with each other...
+ * Then for the goal condition check we see if the the
+ * state one-side matches with the goal.
  */
 public class DeletePrecondRelax {
 
