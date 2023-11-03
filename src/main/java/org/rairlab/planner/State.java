@@ -1,7 +1,5 @@
 package org.rairlab.planner;
 
-import org.rairlab.shadow.prover.core.Prover;
-import org.rairlab.shadow.prover.core.SnarkWrapper;
 import org.rairlab.shadow.prover.representations.formula.Formula;
 import org.rairlab.shadow.prover.utils.CollectionUtils;
 import org.rairlab.shadow.prover.utils.Reader;
@@ -14,7 +12,6 @@ import java.util.Set;
 public class State {
 
     final Set<Formula> formulae;
-    private static final Prover prover = SnarkWrapper.getInstance();
     static Formula FALSE;
 
     static{

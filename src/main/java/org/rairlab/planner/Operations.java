@@ -2,7 +2,7 @@ package org.rairlab.planner;
 
 import org.rairlab.planner.utils.Visualizer;
 import org.rairlab.shadow.prover.core.Prover;
-import org.rairlab.shadow.prover.core.SnarkWrapper;
+import org.rairlab.shadow.prover.core.ccprovers.CognitiveCalculusProver;
 import org.rairlab.shadow.prover.core.proof.Justification;
 import org.rairlab.shadow.prover.representations.formula.BiConditional;
 import org.rairlab.shadow.prover.representations.formula.Formula;
@@ -44,9 +44,7 @@ public class Operations {
         applyCache.clear();
     }
     static {
-        prover = SnarkWrapper.getInstance();
-
-
+        prover =  new CognitiveCalculusProver();
     }
 
     public static synchronized Optional<Justification> proveCached(Set<Formula> assumptions, Formula goal) {
@@ -192,6 +190,7 @@ public class Operations {
             // Apply binding to get grounded action and calculate the next state
             // newState = (oldState - Deletions(a)) U Additions(a)
             Action groundedAction = action.instantiate(binding);
+
             State newState = State.initializeWith(Sets.union(
                 Sets.difference(state.getFormulae(), groundedAction.getDeletions()),
                 groundedAction.getAdditions()
