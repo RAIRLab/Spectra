@@ -95,6 +95,9 @@ public class Plan {
 
     @Override
     public String toString() {
+        if (actions.size() == 0) {
+            return "";
+        }
         return actions.stream().map(x-> x.toString() + "  ").reduce((x,y) -> x + y).get();
     }
 
