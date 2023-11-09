@@ -1,10 +1,13 @@
 {:name "GrapeVine"
     :background [
+        ; Type predicates
         (agent a)
         (agent b)
         (agent c)
         (room p1)
         (room p2)
+
+        ; Unique name axioms
         (not (= a b))
         (not (= a c))
         (not (= b c))
@@ -20,8 +23,8 @@
                 (not (at ?a p2))
             ]
             :deletions [
-                (at ?a p2)
                 (not (at ?a p1))
+                (at ?a p2)
             ]
         })
 
@@ -36,8 +39,8 @@
                 (not (at ?a p1))
             ]
             :deletions [
-                (at ?a p1)
                 (not (at ?a p2))
+                (at ?a p1)
             ]
         })
 
@@ -65,6 +68,8 @@
             :deletions [
                 (not (Believes! ?a2 (the ?a1)))
                 (not (Believes! ?a3 (the ?a1)))
+                (not (Believes ?a1 (Believes! ?a2 (the ?a1))))
+                (not (Believes ?a1 (Believes! ?a3 (the ?a1))))
             ]
         })
 
@@ -89,6 +94,7 @@
             ]
             :deletions [
                 (not (Believes! ?a2 (the ?a1)))
+                (not (Believes! ?a1 (Believes! ?a2 (the ?a1))))
             ]
         })
 
