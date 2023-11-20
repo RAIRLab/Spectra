@@ -46,7 +46,7 @@ public final class Runner {
         }
 
         AStarPlanner astarplanner = new AStarPlanner();
-        astarplanner.setK(2);
+        astarplanner.setK(1);
 
         for (PlanningProblem planningProblem : planningProblemList) {
 
