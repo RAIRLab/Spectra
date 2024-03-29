@@ -86,11 +86,11 @@ public class AStarPlanner {
             State lastState = currentSearch.getLeft();
             List<Action> previous_actions = currentSearch.getRight();
 
-            System.out.println("--------------------");
-            System.out.println("Considering state with heuristic: " + comparator.getValue(currentSearch));
-            System.out.println("Current Plan: " + seq.get(lastState).toString());
-            System.out.println("Current State: " + lastState.toString());
-            System.out.println("--------------------");
+            // System.out.println("--------------------");
+            // System.out.println("Considering state with heuristic: " + comparator.getValue(currentSearch));
+            // System.out.println("Current Plan: " + seq.get(lastState).toString());
+            // System.out.println("Current State: " + lastState.toString());
+            // System.out.println("--------------------");
 
             // Exit loop if we've passed the depth limit
             int currentDepth = previous_actions.size();
@@ -116,8 +116,7 @@ public class AStarPlanner {
             for (Action action : nonTrivialActions) {
                 // System.out.println("Considering action: " + action.getName());
 
-                Value currentTime = Operations.getTime(previous_actions.size());
-                Optional<Set<Pair<State, Action>>> optNextStateActionPairs = Operations.apply(background, action, lastState, currentTime);
+                Optional<Set<Pair<State, Action>>> optNextStateActionPairs = Operations.apply(background, action, lastState);
 
                 // Ignore actions that aren't applicable
                 if (optNextStateActionPairs.isEmpty()) {
