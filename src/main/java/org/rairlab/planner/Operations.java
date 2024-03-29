@@ -164,23 +164,6 @@ public class Operations {
         return Optional.of(ans.get().getRight());
     }
 
-    public static Value getTime(int time) {
-        return new Constant("t" + time);
-    }
-
-    public static int getTime(Value time) {
-        String s = time.getName();
-        String[] ss = s.split("t");
-        if (ss.length != 2) {
-            return -1;
-        }
-        try {
-            int t = Integer.parseInt(ss[1]);
-            return t + 1;
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
     public static Optional<Set<Pair<State, Action>>> apply(Set<Formula> background, Action action, State state) {
 
         // // Get resulting states from cache if computed before
