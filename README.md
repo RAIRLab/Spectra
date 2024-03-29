@@ -1,6 +1,6 @@
 # Spectra
 
-Spectra is a general purpose planning system. It extends STRIPS-style planning by allowing arbitray DCEC and first-order formulae for state descriptions, background knowledge, and action descriptions rather than just predicates. This allows, for instance, handling domains with infinite or unbounded objects elegantly (among other things). 
+Spectra is a general purpose planning system. It extends STRIPS-style planning by allowing arbitrary DCEC and first-order formulae for state descriptions, background knowledge, and action descriptions rather than just predicates. This allows, for instance, handling domains with infinite or unbounded objects elegantly (among other things). 
 
 [Overview Presentation (pdf)](https://drive.google.com/open?id=1RHulFDgASACBkjvl-8ZEidj50NbGmKPu)
 
