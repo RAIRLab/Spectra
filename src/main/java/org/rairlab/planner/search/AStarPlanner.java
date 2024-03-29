@@ -69,8 +69,8 @@ public class AStarPlanner {
         search.add(searchStart);
 
         // For debugging...
-        Map<State, List<Action>> seq = new HashMap<State, List<Action>>();
-        seq.put(start, new ArrayList<Action>());
+        // Map<State, List<Action>> seq = new HashMap<State, List<Action>>();
+        // seq.put(start, new ArrayList<Action>());
 
         // Current set of plans
         Set<Plan> plansFound = new HashSet<Plan>();
@@ -150,7 +150,7 @@ public class AStarPlanner {
                     search.add(futureSearch);
 
                     // For debugging...
-                    seq.put(nextState, next_actions);
+                    // seq.put(nextState, next_actions);
 
                 }
             }
