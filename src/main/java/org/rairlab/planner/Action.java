@@ -49,7 +49,14 @@ public class Action {
 
         this.freeVariables = freeVariables;
 
-        this.precondition = new And(preconditions.stream().collect(Collectors.toList()));
+        if (preconditions.size() > 1) {
+            this.precondition = new And(preconditions.stream().collect(Collectors.toList()));
+        } else if (preconditions.size() == 1) {
+            this.precondition = preconditions.iterator().next();
+        } else {
+            this.precondition = State.TRUE;
+        }
+
 
         this.weight = preconditions.stream().mapToInt(Formula::getWeight).sum() +
                 additions.stream().mapToInt(Formula::getWeight).sum() +

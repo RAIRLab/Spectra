@@ -6,6 +6,7 @@ import org.rairlab.planner.State;
 import org.rairlab.planner.Action;
 import org.rairlab.planner.Plan;
 import org.rairlab.planner.Operations;
+import org.rairlab.shadow.prover.representations.value.Value;
 
 import java.util.*;
 import java.util.function.Function;
@@ -67,6 +68,10 @@ public class AStarPlanner {
         comparator.setValue(searchStart, 0);
         search.add(searchStart);
 
+        // For debugging...
+        // Map<State, List<Action>> seq = new HashMap<State, List<Action>>();
+        // seq.put(start, new ArrayList<Action>());
+
         // Current set of plans
         Set<Plan> plansFound = new HashSet<Plan>();
 
@@ -81,7 +86,11 @@ public class AStarPlanner {
             State lastState = currentSearch.getLeft();
             List<Action> previous_actions = currentSearch.getRight();
 
+            // System.out.println("--------------------");
             // System.out.println("Considering state with heuristic: " + comparator.getValue(currentSearch));
+            // System.out.println("Current Plan: " + seq.get(lastState).toString());
+            // System.out.println("Current State: " + lastState.toString());
+            // System.out.println("--------------------");
 
             // Exit loop if we've passed the depth limit
             int currentDepth = previous_actions.size();
@@ -105,6 +114,8 @@ public class AStarPlanner {
 
             // Apply the action to the state and add to the search space
             for (Action action : nonTrivialActions) {
+                // System.out.println("Considering action: " + action.getName());
+
                 Optional<Set<Pair<State, Action>>> optNextStateActionPairs = Operations.apply(background, action, lastState);
 
                 // Ignore actions that aren't applicable
@@ -137,6 +148,10 @@ public class AStarPlanner {
                     int heuristicValue = heuristic.apply(nextState);
                     comparator.setValue(futureSearch, planCost + heuristicValue);
                     search.add(futureSearch);
+
+                    // For debugging...
+                    // seq.put(nextState, next_actions);
+
                 }
             }
         }

@@ -4,11 +4,12 @@ import org.rairlab.planner.utils.Visualizer;
 import org.rairlab.shadow.prover.core.Prover;
 import org.rairlab.shadow.prover.core.ccprovers.CognitiveCalculusProver;
 import org.rairlab.shadow.prover.core.proof.Justification;
-import org.rairlab.shadow.prover.representations.formula.BiConditional;
-import org.rairlab.shadow.prover.representations.formula.Formula;
-
 import org.rairlab.shadow.prover.representations.value.Value;
 import org.rairlab.shadow.prover.representations.value.Variable;
+import org.rairlab.shadow.prover.representations.formula.*;
+import org.rairlab.shadow.prover.representations.value.Constant;
+
+
 import org.rairlab.shadow.prover.utils.CollectionUtils;
 
 import org.rairlab.shadow.prover.utils.Sets;
@@ -16,11 +17,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Triple;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by naveensundarg on 1/13/17.
@@ -29,6 +33,7 @@ public class Operations {
 
     private static boolean DEEP_EQUIVALENCE = false;
     private static boolean THROW_AWAY_EMPTY_BINDINGS = true;
+    private static boolean MONOTONIC = true;
     private static Prover prover;
 
 
@@ -48,40 +53,44 @@ public class Operations {
     }
 
     public static synchronized Optional<Justification> proveCached(Set<Formula> assumptions, Formula goal) {
-
-        // (1) If we've asked to prove this exact goal from assumptions before
-        // then return the previous result
         Pair<Set<Formula>, Formula> inputPair = ImmutablePair.of(assumptions, goal);
-        if (proverCache.containsKey(inputPair)) {
-            return proverCache.get(inputPair);
-        }
 
-        // Iterate through the cache
-        for (Map.Entry<Pair<Set<Formula>, Formula>, Optional<Justification>> entry : proverCache.entrySet()) {
-            Set<Formula> cachedAssumptions = entry.getKey().getLeft();
-            Formula cachedGoal = entry.getKey().getRight();
-            Optional<Justification> optJust = entry.getValue();
-
-            // (2) Return the cached justification if:
-            // - Goals are the same
-            // - The cached assumptions are a subset of the current ones
-            // - A justification was found
-            if (optJust.isPresent() && cachedGoal.equals(goal) && Sets.subset(cachedAssumptions, assumptions)) {
-                return optJust;
+        if (MONOTONIC) {
+            // (1) If we've asked to prove this exact goal from assumptions before
+            // then return the previous result
+            if (proverCache.containsKey(inputPair)) {
+                return proverCache.get(inputPair);
             }
 
-            // (3) Return cached failure if:
-            // - Goals are the same
-            // - Assumptions are a subset of cached assumptions
-            // - No justification was found
-            if (optJust.isEmpty() && cachedGoal.equals(goal) && Sets.subset(assumptions, cachedAssumptions)) {
-                return optJust;
+            // Iterate through the cache
+            for (Map.Entry<Pair<Set<Formula>, Formula>, Optional<Justification>> entry : proverCache.entrySet()) {
+                Set<Formula> cachedAssumptions = entry.getKey().getLeft();
+                Formula cachedGoal = entry.getKey().getRight();
+                Optional<Justification> optJust = entry.getValue();
+
+                // (2) Return the cached justification if:
+                // - Goals are the same
+                // - The cached assumptions are a subset of the current ones
+                // - A justification was found
+                if (optJust.isPresent() && cachedGoal.equals(goal) && Sets.subset(cachedAssumptions, assumptions)) {
+                    return optJust;
+                }
+
+                // (3) Return cached failure if:
+                // - Goals are the same
+                // - Assumptions are a subset of cached assumptions
+                // - No justification was found
+                if (optJust.isEmpty() && cachedGoal.equals(goal) && Sets.subset(assumptions, cachedAssumptions)) {
+                    return optJust;
+                }
             }
-        }
+    }
 
         // Otherwise create a new call to the theorem prover
         Optional<Justification> answer = prover.prove(assumptions, goal);
-        proverCache.put(inputPair, answer);
+        if (MONOTONIC) {
+            proverCache.put(inputPair, answer);
+        }
         return answer;
 
     }
@@ -155,10 +164,9 @@ public class Operations {
         return Optional.of(ans.get().getRight());
     }
 
-
     public static Optional<Set<Pair<State, Action>>> apply(Set<Formula> background, Action action, State state) {
 
-        // Get resulting states from cache if computed before
+        // // Get resulting states from cache if computed before
         if(applyCache.containsKey(Triple.of(background, action, state))){
             Optional<Set<Pair<State, Action>>>  ans  = applyCache.get(Triple.of(background, action, state));
             if(ans.isPresent()){
@@ -169,7 +177,14 @@ public class Operations {
 
         // Ask theorem prover for witnesses that satisfy the precondition
         Set<Formula> givens = Sets.union(background, state.getFormulae());
-        Optional<Set<Map<Variable, Value>>> bindingsOpt = proveAndGetBindingsCached(givens, action.getPrecondition(), action.openVars());
+
+        Formula precondition = action.getPrecondition();
+
+        List<Variable> openVars = action.openVars()
+            .stream()
+            .collect(Collectors.toList());
+
+        Optional<Set<Map<Variable, Value>>> bindingsOpt = proveAndGetBindingsCached(givens, precondition, openVars);
 
         // If not witnesses found, return nothing
         if (!bindingsOpt.isPresent()) {
@@ -191,9 +206,12 @@ public class Operations {
             // newState = (oldState - Deletions(a)) U Additions(a)
             Action groundedAction = action.instantiate(binding);
 
+            Set<Formula> additions = groundedAction.getAdditions();
+            Set<Formula> deletions = groundedAction.getDeletions();
+
             State newState = State.initializeWith(Sets.union(
-                Sets.difference(state.getFormulae(), groundedAction.getDeletions()),
-                groundedAction.getAdditions()
+                Sets.difference(state.getFormulae(), deletions),
+                additions
             ));
 
             // If the state progresses, record it as a possible next state
@@ -203,6 +221,7 @@ public class Operations {
         }
 
         applyCache.put(Triple.of(background, action, state), Optional.of(nextStates));
+
         return Optional.of(nextStates);
 
     }

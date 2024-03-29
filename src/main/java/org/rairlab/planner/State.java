@@ -12,14 +12,17 @@ import java.util.Set;
 public class State {
 
     final Set<Formula> formulae;
+    static Formula TRUE;
     static Formula FALSE;
 
     static{
 
         try {
+            TRUE = Reader.readFormulaFromString("(or P (not P))");
             FALSE = Reader.readFormulaFromString("(and P (not P))");
         } catch (Reader.ParsingException e) {
             e.printStackTrace();
+            TRUE = null;
             FALSE  = null;
         }
 

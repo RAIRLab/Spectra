@@ -61,16 +61,17 @@
             ]
             :additions [
                 (Believes! ?a2 (the ?a1))
-                (Believes ?a3 (the ?a1))
-                (Believes ?a1 (Believes! ?a2 (the ?a1)))
-                (Believes ?a1 (Believes! ?a3 (the ?a1)))
+                (Believes! ?a3 (the ?a1))
+                (Believes! ?a1 (Believes! ?a2 (the ?a1)))
+                (Believes! ?a1 (Believes! ?a3 (the ?a1)))
             ]
             :deletions [
                 (not (Believes! ?a2 (the ?a1)))
                 (not (Believes! ?a3 (the ?a1)))
-                (not (Believes ?a1 (Believes! ?a2 (the ?a1))))
-                (not (Believes ?a1 (Believes! ?a3 (the ?a1))))
+                (not (Believes! ?a1 (Believes! ?a2 (the ?a1))))
+                (not (Believes! ?a1 (Believes! ?a3 (the ?a1))))
             ]
+            :cost 2
         })
 
         (define-action share-single [?a1 ?a2 ?a3 ?r] {
@@ -96,6 +97,7 @@
                 (not (Believes! ?a2 (the ?a1)))
                 (not (Believes! ?a1 (Believes! ?a2 (the ?a1))))
             ]
+            :cost 2
         })
 
     ]

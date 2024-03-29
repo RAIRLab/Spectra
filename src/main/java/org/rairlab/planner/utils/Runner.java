@@ -46,10 +46,11 @@ public final class Runner {
         }
 
         AStarPlanner astarplanner = new AStarPlanner();
-        astarplanner.setK(2);
+        astarplanner.setK(1);
 
         for (PlanningProblem planningProblem : planningProblemList) {
 
+            long start = System.currentTimeMillis();
             Set<Plan> plans = astarplanner.plan(
                 planningProblem.getBackground(),
                 planningProblem.getActions(),
@@ -57,9 +58,11 @@ public final class Runner {
                 planningProblem.getGoal(),
                 ConstantHeuristic::h
             );
+            long end = System.currentTimeMillis();
 
             if(plans.size() > 0) {
                 System.out.println(plans.toString());
+                System.out.println("Time (ms): " + (end - start));
             }
             else {
                 System.out.println("FAILED");
