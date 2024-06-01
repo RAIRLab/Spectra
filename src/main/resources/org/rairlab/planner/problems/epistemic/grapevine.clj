@@ -1,3 +1,6 @@
+
+;This is Brandon's grapevine problem from the SPECTRA system description paper (https://doi.org/10.1007/s13218-024-00847-8)
+
 {:name "GrapeVine"
     :background [
         ; Type predicates
