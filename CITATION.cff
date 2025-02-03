@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "Cite it as below:"
+authors:
+- family-names: "Govindarajulu"
+  given-names: "Naveen Sundar"
+  orcid: "https://orcid.org/0000-0003-4772-6960"
+- family-names: "Rozek"
+  given-names: "Brandon"
+  orcid: "https://orcid.org/0000-0002-4537-559X"
+- family-names: "James"
+  given-names: "Oswald"
+  orcid: "https://orcid.org/0000-0003-1195-4793"
+- family-names: "Bringsjord"
+  given-names: "Selmer"
+  orcid: "https://orcid.org/0000-0002-5700-1990"
+title: "Spectra"
+version: 0.50
+date-released: 2022-5-22
+url: "https://github.com/RAIRLab/Spectra"
